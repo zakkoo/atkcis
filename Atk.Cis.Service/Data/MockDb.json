@@ -1,0 +1,52 @@
+{
+  "users": [
+    {
+      "Id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "DisplayName": "Agoulif Zakaria",
+      "PrimaryCode": "agz",
+      "PlusOneCode": "agz+1"
+    },
+    {
+      "Id": "8d7e2f3a-4b12-4c89-9f1e-6b5d8c7a9e2f",
+      "DisplayName": "Kulla Henry",
+      "PrimaryCode": "kuh",
+      "PlusOneCode": "kuh+1"
+    },
+    {
+      "Id": "c9b4e5d6-7f89-4a2b-b3c1-d4e5f6a7b8c9",
+      "DisplayName": "Niedermann Kevin",
+      "PrimaryCode": "nik",
+      "PlusOneCode": "nik+1"
+    },
+    {
+      "Id": "a1b2c3d4-e5f6-4g7h-8i9j-0k1l2m3n4o5p",
+      "DisplayName": "Esslinger Lukas",
+      "PrimaryCode": "esl",
+      "PlusOneCode": "esl+1"
+    },
+    {
+      "Id": "5f6e7d8c-9a0b-1c2d-3e4f-5g6h7i8j9k0l",
+      "DisplayName": "Esslinger Frank",
+      "PrimaryCode": "esf",
+      "PlusOneCode": "esf+1"
+    }
+  ],
+  "checkInSessions": [
+    {
+      "SessionId": "e3f2a1b4-c5d6-4e7f-8g9h-0i1j2k3l4m5n",
+      "UserId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "Status": "Open",
+      "OpenedAt": "2025-12-23T14:30:00+00:00",
+      "ClosedAt": null,
+      "PartnerCount": 1
+    },
+    {
+      "SessionId": "b6c7d8e9-f0a1-2b3c-4d5e-6f7g8h9i0j1k",
+      "UserId": "8d7e2f3a-4b12-4c89-9f1e-6b5d8c7a9e2f",
+      "Status": "Open",
+      "OpenedAt": "2025-12-23T15:15:00+00:00",
+      "ClosedAt": null,
+      "PartnerCount": 0
+    }
+  ]
+}

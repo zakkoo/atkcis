@@ -1,4 +1,4 @@
-using Atk.Cis.Worker.Enums;
+using Atk.Cis.Service.Enums;
 
 namespace Atk.Cis.Service.Models;
 
