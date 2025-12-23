@@ -1,12 +1,19 @@
+using Atk.Cis.Service;
+
 namespace Atk.Cis.Worker;
 
 public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
+    private readonly CheckInDesk _desk;
 
     public Worker(ILogger<Worker> logger)
     {
         _logger = logger;
+
+
+        // temporary
+        _desk = new CheckInDesk();
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -53,7 +60,9 @@ public class Worker : BackgroundService
                 _logger.LogInformation("Shutdown requested.");
                 Environment.Exit(0);
                 break;
-
+            case "last-checkin":
+                _logger.LogInformation(_desk.CheckInOrOut(""));
+                break;
             case "help":
                 Console.WriteLine(":status | :help | :quit");
                 break;

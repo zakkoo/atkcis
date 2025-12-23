@@ -10,4 +10,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.8" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Atk.Cis.Service\Atk.Cis.Service.csproj" />
+  </ItemGroup>
 </Project>
