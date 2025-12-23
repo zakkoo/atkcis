@@ -1,6 +1,6 @@
 using Atk.Cis.Worker.Enums;
 
-namespace Atk.Cis.Worker.Models;
+namespace Atk.Cis.Service.Models;
 
 public sealed class CheckInSession
 {

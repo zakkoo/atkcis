@@ -1,4 +1,4 @@
-namespace Atk.Cis.Worker.Enums;
+namespace Atk.Cis.Service.Enums;
 
 public enum SessionStatus
 {
