@@ -1,13 +1,14 @@
 using Atk.Cis.Service.Data;
+using Atk.Cis.Service.Interfaces;
 
 namespace Atk.Cis.Service;
 
-public class CheckInDesk
+public class CheckInDeskService : ICheckInDeskService
 {
 
     private MockData _DbContext;
 
-    public CheckInDesk()
+    public CheckInDeskService()
     {
         _DbContext = MockDataLoader.LoadFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "MockDb.json"));
     }
@@ -28,5 +29,10 @@ public class CheckInDesk
 
         return test1 ?? "N/A";
 
+    }
+
+    public async Task<string> CheckIn(string barcode)
+    {
+        return null;
     }
 }
