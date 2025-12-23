@@ -13,26 +13,9 @@ public class CheckInDeskService : ICheckInDeskService
         _DbContext = MockDataLoader.LoadFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "MockDb.json"));
     }
 
-
-    public string CheckInOrOut(string barcode)
-    {
-        // returns user checked in
-        //
-        // returns user checked out
-        //
-        // returns user plus one checked in
-        //
-        // returns unknown barcode
-
-
-        var test1 = _DbContext.Users.FirstOrDefault()?.DisplayName;
-
-        return test1 ?? "N/A";
-
-    }
-
     public async Task<string> CheckIn(string barcode)
     {
-        return null;
+        var user = _DbContext.Users.SingleOrDefault(x => x.PrimaryCode.ToLower() == barcode.ToLower());
+        return $"{user?.DisplayName} checked in.";
     }
 }

@@ -22,8 +22,6 @@ public class Worker : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            using var scope = _scopeFactory.CreateScope();
-            _desk = scope.ServiceProvider.GetRequiredService<ICheckInDeskService>();
             if (_logger.IsEnabled(LogLevel.Information))
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
@@ -34,18 +32,23 @@ public class Worker : BackgroundService
             if (string.IsNullOrEmpty(input))
                 continue;
 
+
             if (input.StartsWith(":"))
             {
                 HandleCommand(input[1..], stoppingToken);
             }
             else
             {
-                // handle barcode
-                Console.WriteLine($"Barcode: {input}");
+                using var scope = _scopeFactory.CreateScope();
+                _desk = scope.ServiceProvider.GetRequiredService<ICheckInDeskService>();
+                Console.WriteLine($"Check-in with code: {input}");
+                var result = await _desk.CheckIn(input);
+                Console.WriteLine("Check-in desk responded with:");
+                Console.WriteLine(result);
             }
 
 
-            await Task.Delay(5000, stoppingToken);
+            await Task.Delay(500, stoppingToken);
         }
     }
 
@@ -63,7 +66,7 @@ public class Worker : BackgroundService
                 Environment.Exit(0);
                 break;
             case "last-checkin":
-                _logger.LogInformation($"yo: {_desk.CheckIn("asdf").Result}");
+                _logger.LogInformation($"todo...");
                 break;
             case "help":
                 Console.WriteLine(":status | :help | :quit");
