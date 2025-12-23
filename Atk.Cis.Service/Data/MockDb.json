@@ -35,7 +35,7 @@
     {
       "SessionId": "e3f2a1b4-c5d6-4e7f-8g9h-0i1j2k3l4m5n",
       "UserId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
-      "Status": "Open",
+      "Status": "10",
       "OpenedAt": "2025-12-23T14:30:00+00:00",
       "ClosedAt": null,
       "PartnerCount": 1
@@ -43,9 +43,17 @@
     {
       "SessionId": "b6c7d8e9-f0a1-2b3c-4d5e-6f7g8h9i0j1k",
       "UserId": "8d7e2f3a-4b12-4c89-9f1e-6b5d8c7a9e2f",
-      "Status": "Open",
+      "Status": "10",
       "OpenedAt": "2025-12-23T15:15:00+00:00",
       "ClosedAt": null,
+      "PartnerCount": 0
+    },
+    {
+      "SessionId": "8D01EC1C-9BFC-4A06-8E31-3DE2564305E4",
+      "UserId": "5f6e7d8c-9a0b-1c2d-3e4f-5g6h7i8j9k0l",
+      "Status": "20",
+      "OpenedAt": "2025-12-23T15:15:00+00:00",
+      "ClosedAt": "2025-12-23T16:15:00+00:00",
       "PartnerCount": 0
     }
   ]
