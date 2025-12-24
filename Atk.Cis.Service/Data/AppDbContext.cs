@@ -1,7 +1,7 @@
 using Atk.Cis.Service.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace MiniEfSqlite.Data;
+namespace Atk.Cis.Service.Data;
 
 public class AppDbContext : DbContext
 {
