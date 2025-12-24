@@ -39,19 +39,25 @@ public class CheckInDeskService : ICheckInDeskService
         }
         else if (plusOne != null)
         {
-            return CheckInPlusOne(plusOne);
+            var checkInSession = _DbContext.CheckInSessions.FirstOrDefault(x => x.Status == SessionStatus.Open && x.UserId == plusOne.Id);
+            if (checkInSession == null)
+            {
+                checkInSession = new CheckInSession
+                {
+                    SessionId = Guid.NewGuid(),
+                    UserId = plusOne.Id,
+                    OpenedAt = DateTimeOffset.Now,
+                    PartnerCount = 1
+                };
+                _DbContext.CheckInSessions.Add(checkInSession);
+                return $"{user.DisplayName} and {checkInSession.PartnerCount} friend(s) checked in.";
+            }
+            checkInSession.PartnerCount = checkInSession.PartnerCount + 1;
+            return $"{user.DisplayName} and {checkInSession.PartnerCount} friend(s) checked in.";
         }
         else
         {
             return "Invalid barcode. Check-in was cancelled.";
         }
     }
-
-    private string CheckInUser(User user)
-    {
-
-        return null;
-    }
-    private string CheckInPlusOne(User plusOne) { return null; }
-
 }
