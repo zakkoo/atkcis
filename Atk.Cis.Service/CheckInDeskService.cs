@@ -50,10 +50,10 @@ public class CheckInDeskService : ICheckInDeskService
                     PartnerCount = 1
                 };
                 _DbContext.CheckInSessions.Add(checkInSession);
-                return $"{user.DisplayName} and {checkInSession.PartnerCount} friend(s) checked in.";
+                return $"{user?.DisplayName} and {checkInSession.PartnerCount} friend(s) checked in.";
             }
             checkInSession.PartnerCount = checkInSession.PartnerCount + 1;
-            return $"{user.DisplayName} and {checkInSession.PartnerCount} friend(s) checked in.";
+            return $"{user?.DisplayName} and {checkInSession.PartnerCount} friend(s) checked in.";
         }
         else
         {

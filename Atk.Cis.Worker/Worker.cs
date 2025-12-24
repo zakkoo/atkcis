@@ -41,9 +41,7 @@ public class Worker : BackgroundService
             {
                 using var scope = _scopeFactory.CreateScope();
                 _desk = scope.ServiceProvider.GetRequiredService<ICheckInDeskService>();
-                Console.WriteLine($"Check-in with code: {input}");
                 var result = await _desk.CheckIn(input);
-                Console.WriteLine("Check-in desk responded with:");
                 Console.WriteLine(result);
             }
 
