@@ -73,7 +73,7 @@ public class Worker : BackgroundService
                 {
                     using var scope = _scopeFactory.CreateScope();
                     _desk = scope.ServiceProvider.GetRequiredService<ICheckInDeskService>();
-                    var result = await _desk.SignUp("zak", "attak", DateTimeOffset.Now);
+                    var result = await _desk.SignUp("Zakaria", "Agoulif", DateTimeOffset.Now);
                     Console.WriteLine(result);
                 }
                 break;

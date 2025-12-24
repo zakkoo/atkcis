@@ -8,72 +8,67 @@ namespace Atk.Cis.Service;
 public class CheckInDeskService : ICheckInDeskService
 {
 
-    private MockData _DbContext;
-    private AppDbContext _realOne;
+    private AppDbContext _dbContext;
 
     public CheckInDeskService(AppDbContext realOne)
     {
-        _realOne = realOne;
-        _DbContext = MockDataLoader.LoadFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "MockDb.json"));
+        _dbContext = realOne;
     }
 
     public async Task<string> SignUp(string firstName, string lastName, DateTimeOffset birthday)
     {
+        var code = GenerateCode(firstName, lastName);
         var testUser = new User
         {
-            DisplayName = "Zak attakk",
+            FirstName = firstName,
+            LastName = lastName,
             Id = Guid.NewGuid(),
-            PrimaryCode = "agz",
-            PlusOneCode = "agz1"
+            Code = code,
         };
-        _realOne.Users.Add(testUser);
-        await _realOne.SaveChangesAsync();
+        _dbContext.Users.Add(testUser);
+        await _dbContext.SaveChangesAsync();
         return "signed up!";
     }
 
     public async Task<string> CheckIn(string barcode)
     {
-        var user = _DbContext.Users.SingleOrDefault(x => x.PrimaryCode.ToLower() == barcode.ToLower());
-        var plusOne = _DbContext.Users.SingleOrDefault(x => x.PlusOneCode.ToLower() == barcode.ToLower());
-        if (user != null)
+        var user = _dbContext.Users.SingleOrDefault(x => x.Code == barcode.ToLower());
+
+        if (user == null) return "Invalid barcode. Check-in was cancelled.";
+
+        var checkInSession = _dbContext.CheckInSessions.FirstOrDefault(x => x.Status == SessionStatus.Open && x.UserId == user.Id);
+        if (checkInSession == null)
         {
-            var checkInSession = _DbContext.CheckInSessions.FirstOrDefault(x => x.Status == SessionStatus.Open && x.UserId == user.Id);
-            if (checkInSession == null)
+            checkInSession = new CheckInSession
             {
-                checkInSession = new CheckInSession
-                {
-                    SessionId = Guid.NewGuid(),
-                    UserId = user.Id,
-                    OpenedAt = DateTimeOffset.Now,
-                };
-                _DbContext.CheckInSessions.Add(checkInSession);
-                return $"{user.DisplayName} checked in.";
-            }
-            checkInSession.Status = SessionStatus.Closed;
-            checkInSession.ClosedAt = DateTimeOffset.Now;
-            return $"{user.DisplayName} checked out.";
+                SessionId = Guid.NewGuid(),
+                UserId = user.Id,
+                OpenedAt = DateTimeOffset.Now,
+            };
+            _dbContext.CheckInSessions.Add(checkInSession);
+            _ = _dbContext.SaveChangesAsync();
+            return $"{user.FirstName} {user.LastName} checked in.";
         }
-        else if (plusOne != null)
+        checkInSession.Status = SessionStatus.Closed;
+        checkInSession.ClosedAt = DateTimeOffset.Now;
+        _ = _dbContext.SaveChangesAsync();
+        return $"{user.FirstName} {user.LastName} checked out.";
+    }
+
+    private string GenerateCode(string firstName, string lastName)
+    {
+        var code = (lastName[0..2] + firstName[0]).ToLower();
+
+        if (!_dbContext.Users.Any(x => x.Code == code)) return code;
+
+        var counter = 1;
+        code = code + counter;
+
+        while (_dbContext.Users.Any(x => x.Code == code))
         {
-            var checkInSession = _DbContext.CheckInSessions.FirstOrDefault(x => x.Status == SessionStatus.Open && x.UserId == plusOne.Id);
-            if (checkInSession == null)
-            {
-                checkInSession = new CheckInSession
-                {
-                    SessionId = Guid.NewGuid(),
-                    UserId = plusOne.Id,
-                    OpenedAt = DateTimeOffset.Now,
-                    PartnerCount = 1
-                };
-                _DbContext.CheckInSessions.Add(checkInSession);
-                return $"{user?.DisplayName} and {checkInSession.PartnerCount} friend(s) checked in.";
-            }
-            checkInSession.PartnerCount = checkInSession.PartnerCount + 1;
-            return $"{user?.DisplayName} and {checkInSession.PartnerCount} friend(s) checked in.";
+            counter++;
+            code = code[0..2] + counter;
         }
-        else
-        {
-            return "Invalid barcode. Check-in was cancelled.";
-        }
+        return code;
     }
 }

@@ -3,7 +3,7 @@ namespace Atk.Cis.Service.Models;
 public class User
 {
     public Guid Id { get; init; }
-    public string? DisplayName { get; set; }
-    public string PrimaryCode { get; init; } = string.Empty;
-    public string PlusOneCode { get; init; } = string.Empty;
+    public string? FirstName { get; set; }
+    public string? LastName { get; set; }
+    public string? Code { get; init; }
 }
