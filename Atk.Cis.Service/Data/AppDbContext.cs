@@ -17,9 +17,10 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().ToTable("Users");
-        modelBuilder.Entity<CheckInSession>().ToTable("CheckInSessions");
 
-
+        modelBuilder.Entity<CheckInSession>()
+                  .ToTable("CheckInSessions")
+                  .HasKey(x => x.SessionId);
 
         base.OnModelCreating(modelBuilder);
     }
