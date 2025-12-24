@@ -9,10 +9,26 @@ public class CheckInDeskService : ICheckInDeskService
 {
 
     private MockData _DbContext;
+    private AppDbContext _realOne;
 
-    public CheckInDeskService()
+    public CheckInDeskService(AppDbContext realOne)
     {
+        _realOne = realOne;
         _DbContext = MockDataLoader.LoadFromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "MockDb.json"));
+    }
+
+    public async Task<string> SignUp(string firstName, string lastName, DateTimeOffset birthday)
+    {
+        var testUser = new User
+        {
+            DisplayName = "Zak attakk",
+            Id = Guid.NewGuid(),
+            PrimaryCode = "agz",
+            PlusOneCode = "agz1"
+        };
+        _realOne.Users.Add(testUser);
+        await _realOne.SaveChangesAsync();
+        return "signed up!";
     }
 
     public async Task<string> CheckIn(string barcode)

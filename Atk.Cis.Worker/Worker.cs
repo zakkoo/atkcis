@@ -50,7 +50,7 @@ public class Worker : BackgroundService
         }
     }
 
-    private void HandleCommand(string command, CancellationToken token)
+    private async void HandleCommand(string command, CancellationToken token)
     {
         switch (command)
         {
@@ -69,7 +69,14 @@ public class Worker : BackgroundService
             case "help":
                 Console.WriteLine(":status | :help | :quit");
                 break;
-
+            case "test":
+                {
+                    using var scope = _scopeFactory.CreateScope();
+                    _desk = scope.ServiceProvider.GetRequiredService<ICheckInDeskService>();
+                    var result = await _desk.SignUp("zak", "attak", DateTimeOffset.Now);
+                    Console.WriteLine(result);
+                }
+                break;
             default:
                 _logger.LogWarning("Unknown command: {Command}", command);
                 break;
