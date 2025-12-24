@@ -49,15 +49,13 @@ namespace Atk.Cis.Service.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("DisplayName")
+                    b.Property<string>("Code")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("PlusOneCode")
-                        .IsRequired()
+                    b.Property<string>("FirstName")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("PrimaryCode")
-                        .IsRequired()
+                    b.Property<string>("LastName")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

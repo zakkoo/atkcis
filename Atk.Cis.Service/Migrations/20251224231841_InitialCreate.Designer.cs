@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Atk.Cis.Service.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251224200101_InitialCreate")]
+    [Migration("20251224231841_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -52,15 +52,13 @@ namespace Atk.Cis.Service.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("DisplayName")
+                    b.Property<string>("Code")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("PlusOneCode")
-                        .IsRequired()
+                    b.Property<string>("FirstName")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("PrimaryCode")
-                        .IsRequired()
+                    b.Property<string>("LastName")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

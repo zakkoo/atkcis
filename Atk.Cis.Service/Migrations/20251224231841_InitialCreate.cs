@@ -32,9 +32,9 @@ namespace Atk.Cis.Service.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    DisplayName = table.Column<string>(type: "TEXT", nullable: true),
-                    PrimaryCode = table.Column<string>(type: "TEXT", nullable: false),
-                    PlusOneCode = table.Column<string>(type: "TEXT", nullable: false)
+                    FirstName = table.Column<string>(type: "TEXT", nullable: true),
+                    LastName = table.Column<string>(type: "TEXT", nullable: true),
+                    Code = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

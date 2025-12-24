@@ -32,7 +32,7 @@ public class CheckInDeskService : ICheckInDeskService
 
     public async Task<string> CheckIn(string barcode)
     {
-        var user = _dbContext.Users.SingleOrDefault(x => x.Code == barcode.ToLower());
+        var user = _dbContext.Users.SingleOrDefault(x => x.Code == barcode.ToLowerInvariant());
 
         if (user == null) return "Invalid barcode. Check-in was cancelled.";
 
@@ -57,18 +57,20 @@ public class CheckInDeskService : ICheckInDeskService
 
     private string GenerateCode(string firstName, string lastName)
     {
-        var code = (lastName[0..2] + firstName[0]).ToLower();
+        var prefix = (lastName[..2] + firstName[0]).ToLowerInvariant();
 
-        if (!_dbContext.Users.Any(x => x.Code == code)) return code;
+        if (!_dbContext.Users.Any(x => x.Code == prefix))
+            return prefix;
 
         var counter = 1;
-        code = code + counter;
+        var candidate = prefix + counter;
 
-        while (_dbContext.Users.Any(x => x.Code == code))
+        while (_dbContext.Users.Any(x => x.Code == candidate))
         {
             counter++;
-            code = code[0..2] + counter;
+            candidate = prefix + counter;
         }
-        return code;
+
+        return candidate;
     }
 }
