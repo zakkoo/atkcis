@@ -6,6 +6,7 @@ namespace Atk.Cis.Service.Data;
 public class AppDbContext : DbContext
 {
     public DbSet<User> Users => Set<User>();
+    public DbSet<CheckInSession> CheckInSessions => Set<CheckInSession>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
@@ -16,6 +17,10 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>().ToTable("Users");
+        modelBuilder.Entity<CheckInSession>().ToTable("CheckInSessions");
+
+
+
         base.OnModelCreating(modelBuilder);
     }
 }
