@@ -6,7 +6,7 @@ namespace Atk.Cis.Service.Data;
 public class AppDbContext : DbContext
 {
     public DbSet<User> Users => Set<User>();
-    public DbSet<CheckInSession> CheckInSessions => Set<CheckInSession>();
+    public DbSet<UserSession> CheckInSessions => Set<UserSession>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
@@ -18,7 +18,7 @@ public class AppDbContext : DbContext
     {
         modelBuilder.Entity<User>().ToTable("Users");
 
-        modelBuilder.Entity<CheckInSession>()
+        modelBuilder.Entity<UserSession>()
                   .ToTable("CheckInSessions")
                   .HasKey(x => x.SessionId);
 
