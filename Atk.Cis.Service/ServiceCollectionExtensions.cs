@@ -1,5 +1,7 @@
 using Atk.Cis.Service.Data;
 using Atk.Cis.Service.Interfaces;
+using System.IO;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +16,30 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<ICheckInDeskService, CheckInDeskService>();
         services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
+        {
+            var databasePath = configuration["Database:Path"];
+
+            if (!string.IsNullOrWhiteSpace(databasePath))
+            {
+                var fullPath = Path.GetFullPath(databasePath);
+                var directory = Path.GetDirectoryName(fullPath);
+
+                if (!string.IsNullOrEmpty(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                var builder = new SqliteConnectionStringBuilder
+                {
+                    DataSource = fullPath
+                };
+                options.UseSqlite(builder.ToString());
+            }
+            else
+            {
+                options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+            }
+        });
 
         return services;
     }
