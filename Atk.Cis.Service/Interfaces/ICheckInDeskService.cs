@@ -3,5 +3,7 @@ namespace Atk.Cis.Service.Interfaces;
 public interface ICheckInDeskService
 {
     Task<string> SignUp(string firstName, string lastName, DateTimeOffset birthday);
-    Task<string> CheckIn(string barcode);
+    Task<string> CheckIn(string code);
+    Task<string> CheckOut(string code);
+    Task<string> CleanupStaleSessions(TimeSpan maxDuration);
 }

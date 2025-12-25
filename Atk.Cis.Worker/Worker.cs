@@ -8,10 +8,12 @@ public class Worker : BackgroundService
     private readonly ILogger<Worker> _logger;
     private readonly IServiceScopeFactory _scopeFactory;
     private ICheckInDeskService? _desk;
+    private readonly IConfiguration _config;
 
-    public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory)
+    public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory, IConfiguration config)
     {
         _logger = logger;
+        _config = config;
         _scopeFactory = scopeFactory;
 
     }
@@ -22,9 +24,15 @@ public class Worker : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            if (_logger.IsEnabled(LogLevel.Information))
+
+            if (true) // need some 1 hour interval here also comming from config
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+
+                var maxDurationMinutes = _config.GetValue<int>("SessionCleanup:MaxDurationMinutes");
+                using var scope = _scopeFactory.CreateScope();
+                _desk = scope.ServiceProvider.GetRequiredService<ICheckInDeskService>();
+                var result = await _desk.CleanupStaleSessions(TimeSpan.FromMinutes(maxDurationMinutes));
+                Console.WriteLine(result);
             }
 
             var input = Console.ReadLine();
