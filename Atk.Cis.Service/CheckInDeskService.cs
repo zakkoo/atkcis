@@ -60,7 +60,7 @@ public class CheckInDeskService : ICheckInDeskService
         var checkInSession = _dbContext.CheckInSessions.FirstOrDefault(x => x.Status == SessionStatus.Open && x.UserId == user.Id);
         if (checkInSession == null)
         {
-            checkInSession = new CheckInSession
+            checkInSession = new UserSession
             {
                 SessionId = Guid.NewGuid(),
                 UserId = user.Id,

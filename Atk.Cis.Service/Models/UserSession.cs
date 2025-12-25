@@ -2,7 +2,7 @@ using Atk.Cis.Service.Enums;
 
 namespace Atk.Cis.Service.Models;
 
-public sealed class CheckInSession
+public sealed class UserSession
 {
     public Guid SessionId { get; init; }
     public Guid UserId { get; init; }
