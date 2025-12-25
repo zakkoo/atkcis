@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Atk.Cis.Service.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251225104512_init")]
+    [Migration("20251225154534_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -24,6 +24,9 @@ namespace Atk.Cis.Service.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("Birthday")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Code")

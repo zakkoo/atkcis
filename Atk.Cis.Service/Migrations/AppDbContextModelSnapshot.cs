@@ -23,6 +23,9 @@ namespace Atk.Cis.Service.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTimeOffset?>("Birthday")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Code")
                         .HasColumnType("TEXT");
 

@@ -32,6 +32,7 @@ namespace Atk.Cis.Service.Migrations
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     FirstName = table.Column<string>(type: "TEXT", nullable: true),
                     LastName = table.Column<string>(type: "TEXT", nullable: true),
+                    Birthday = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
                     Code = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
