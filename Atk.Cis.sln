@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atk.Cis.Worker.Tests", "Atk
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atk.Cis.Service", "Atk.Cis.Service\Atk.Cis.Service.csproj", "{C8F290AA-AF5A-4463-A092-8755E27565FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Atk.Cis.Web", "Atk.Cis.Web\Atk.Cis.Web.csproj", "{8E7FFCD1-9EC8-43C1-8CAE-531A2C79D4D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{C8F290AA-AF5A-4463-A092-8755E27565FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8F290AA-AF5A-4463-A092-8755E27565FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8F290AA-AF5A-4463-A092-8755E27565FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E7FFCD1-9EC8-43C1-8CAE-531A2C79D4D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E7FFCD1-9EC8-43C1-8CAE-531A2C79D4D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E7FFCD1-9EC8-43C1-8CAE-531A2C79D4D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E7FFCD1-9EC8-43C1-8CAE-531A2C79D4D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
