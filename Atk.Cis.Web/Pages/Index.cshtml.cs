@@ -13,9 +13,4 @@ public class IndexModel : PageModel
     }
 
     public string StatusMessage { get; private set; } = "Ready.";
-
-    public async Task OnGetAsync()
-    {
-        StatusMessage = await _checkInDeskService.CleanupStaleSessions(TimeSpan.FromMinutes(1));
-    }
 }

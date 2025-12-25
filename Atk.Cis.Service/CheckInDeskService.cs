@@ -3,6 +3,7 @@ using Atk.Cis.Service.Interfaces;
 using Atk.Cis.Service.Models;
 using Barcoder.Code128;
 using Barcoder.Renderer.Svg;
+using Microsoft.EntityFrameworkCore;
 
 namespace Atk.Cis.Service;
 
@@ -18,23 +19,25 @@ public class CheckInDeskService : ICheckInDeskService
 
     public async Task<string> CleanupStaleSessions(TimeSpan maxDuration)
     {
-        var cutoff = DateTime.UtcNow - maxDuration;
+        var cutoff = DateTimeOffset.UtcNow - maxDuration;
 
-        //var sessionsToClose = _dbContext.CheckInSessions
-        //.Where(s =>
-        //s.ClosedAt == null &&
-        //s.OpenedAt <= cutoff)
-        //.ToList();
+        var sessionsToClose = await _dbContext.CheckInSessions
+            .Where(session => session.ClosedAt == null && session.OpenedAt <= cutoff)
+            .ToListAsync();
 
-        //foreach (var session in sessionsToClose)
-        //{
-        //session.ClosedAt = DateTimeOffset.Now;
-        //}
+        if (sessionsToClose.Count == 0)
+        {
+            return "No stale sessions found.";
+        }
 
-        //_ = _dbContext.SaveChangesAsync();
+        foreach (var session in sessionsToClose)
+        {
+            session.ClosedAt = DateTimeOffset.UtcNow;
+        }
 
-        //return $"Cleaned up {sessionsToClose.Count()} stale sessions.";
-        return "not implemented";
+        await _dbContext.SaveChangesAsync();
+
+        return $"Cleaned up {sessionsToClose.Count} stale sessions.";
     }
 
     public async Task<string> GetBarcode(string firstName, string lastName, DateTimeOffset birthday)
