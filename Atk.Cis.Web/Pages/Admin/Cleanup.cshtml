@@ -1,0 +1,17 @@
+@page
+@model Atk.Cis.Web.Pages.Admin.CleanupModel
+@{
+    ViewData["Title"] = "Admin - Cleanup";
+}
+
+<h1>Session Cleanup</h1>
+
+<p>Run cleanup for sessions open longer than @Model.MaxDurationMinutes minute(s).</p>
+
+<form method="post">
+    <label for="password">Admin password</label>
+    <input id="password" name="Password" type="password" />
+    <button type="submit">Run cleanup</button>
+</form>
+
+<p>@Model.StatusMessage</p>
