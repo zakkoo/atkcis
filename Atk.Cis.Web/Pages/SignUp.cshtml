@@ -19,4 +19,6 @@
     <button type="submit">Create account</button>
 </form>
 
-<p>@Model.StatusMessage</p>
+    <div>
+        @Html.Raw(Model.StatusMessage)
+    </div>

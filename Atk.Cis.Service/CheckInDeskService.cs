@@ -59,7 +59,7 @@ public class CheckInDeskService : ICheckInDeskService
     public async Task<string> SignUp(string firstName, string lastName, DateTimeOffset birthday)
     {
         var code = GenerateCode(firstName, lastName);
-        var testUser = new User
+        var user = new User
         {
             FirstName = firstName,
             LastName = lastName,
@@ -67,9 +67,9 @@ public class CheckInDeskService : ICheckInDeskService
             Id = Guid.NewGuid(),
             Code = code,
         };
-        _dbContext.Users.Add(testUser);
+        _dbContext.Users.Add(user);
         await _dbContext.SaveChangesAsync();
-        return "signed up!";
+        return await GetBarcode(user.FirstName, user.LastName, user.Birthday.GetValueOrDefault());
     }
 
     public async Task<string> CheckIn(string code)
