@@ -21,13 +21,9 @@ public class CheckInDeskService : ICheckInDeskService
     {
         var cutoff = DateTimeOffset.UtcNow - maxDuration;
 
-        var openSessions = await _dbContext.CheckInSessions
-            .Where(session => session.ClosedAt == null)
+        var sessionsToClose = await _dbContext.CheckInSessions
+            .Where(session => session.ClosedAt == null && session.OpenedAt <= cutoff)
             .ToListAsync();
-
-        var sessionsToClose = openSessions
-            .Where(session => session.OpenedAt <= cutoff)
-            .ToList();
 
         if (sessionsToClose.Count == 0)
         {
