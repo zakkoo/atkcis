@@ -1,0 +1,15 @@
+@page
+@model Atk.Cis.Web.Pages.CheckInModel
+@{
+    ViewData["Title"] = "Check-in";
+}
+
+<h1>Check-in</h1>
+
+<form method="post">
+    <label for="code">Code</label>
+    <input id="code" name="Code" value="@Model.Code" />
+    <button type="submit">Check-in</button>
+</form>
+
+<p>@Model.StatusMessage</p>

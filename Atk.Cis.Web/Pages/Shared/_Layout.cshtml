@@ -6,6 +6,11 @@
     <title>@ViewData["Title"] - Atk.Cis.Web</title>
 </head>
 <body>
+    <nav>
+        <a asp-page="/Index">Home</a>
+        <a asp-page="/CheckIn">Check-in</a>
+        <a asp-page="/CheckOut">Check-out</a>
+    </nav>
     <main role="main">
         @RenderBody()
     </main>
