@@ -6,4 +6,5 @@ public interface ICheckInDeskService
     Task<string> CheckIn(string code);
     Task<string> CheckOut(string code);
     Task<string> CleanupStaleSessions(TimeSpan maxDuration);
+    Task<string> GetBarcode(string firstName, string lastName, DateTimeOffset birthday);
 }

@@ -1,6 +1,8 @@
 using Atk.Cis.Service.Data;
 using Atk.Cis.Service.Interfaces;
 using Atk.Cis.Service.Models;
+using Barcoder.Code128;
+using Barcoder.Renderer.Svg;
 
 namespace Atk.Cis.Service;
 
@@ -35,6 +37,25 @@ public class CheckInDeskService : ICheckInDeskService
         return "not implemented";
     }
 
+    public async Task<string> GetBarcode(string firstName, string lastName, DateTimeOffset birthday)
+    {
+        var user = _dbContext.Users.FirstOrDefault(x => x.FirstName != null && x.FirstName.ToLowerInvariant() == firstName.ToLowerInvariant() &&
+                x.LastName != null && lastName.ToLowerInvariant() == x.LastName.ToLowerInvariant() &&
+                x.Birthday == birthday);
+        if (user == null) return string.Empty;
+        var barcode = Code128Encoder.Encode(user.Code);
+        var renderer = new SvgRenderer();
+        using (var stream = new MemoryStream())
+        using (var reader = new StreamReader(stream))
+        {
+            renderer.Render(barcode, stream);
+            stream.Position = 0;
+
+            string svg = reader.ReadToEnd();
+            return svg;
+        }
+    }
+
     public async Task<string> SignUp(string firstName, string lastName, DateTimeOffset birthday)
     {
         var code = GenerateCode(firstName, lastName);
@@ -42,6 +63,7 @@ public class CheckInDeskService : ICheckInDeskService
         {
             FirstName = firstName,
             LastName = lastName,
+            Birthday = birthday,
             Id = Guid.NewGuid(),
             Code = code,
         };
@@ -56,7 +78,7 @@ public class CheckInDeskService : ICheckInDeskService
 
         if (user == null) return "Invalid barcode. Check-in was cancelled.";
 
-        var checkInSession = _dbContext.CheckInSessions.FirstOrDefault(x => x.UserId == user.Id);
+        var checkInSession = _dbContext.CheckInSessions.FirstOrDefault(x => x.UserId == user.Id && x.ClosedAt == null);
         if (checkInSession == null)
         {
             checkInSession = new UserSession
@@ -76,7 +98,7 @@ public class CheckInDeskService : ICheckInDeskService
     {
         var user = _dbContext.Users.SingleOrDefault(x => x.Code == code.ToLowerInvariant());
         if (user == null) return "Invalid barcode. Check-out was cancelled.";
-        var checkInSession = _dbContext.CheckInSessions.FirstOrDefault(x => x.UserId == user.Id);
+        var checkInSession = _dbContext.CheckInSessions.FirstOrDefault(x => x.UserId == user.Id && x.ClosedAt == null);
         if (checkInSession == null) return $"Check-out failed for {user.FirstName} {user.LastName} because there is no open session.";
         checkInSession.ClosedAt = DateTimeOffset.Now;
         _ = _dbContext.SaveChangesAsync();
