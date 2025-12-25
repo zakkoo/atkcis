@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Atk.Cis.Service.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,10 +17,8 @@ namespace Atk.Cis.Service.Migrations
                 {
                     SessionId = table.Column<Guid>(type: "TEXT", nullable: false),
                     UserId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Status = table.Column<int>(type: "INTEGER", nullable: false),
                     OpenedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
-                    ClosedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
-                    PartnerCount = table.Column<int>(type: "INTEGER", nullable: false)
+                    ClosedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

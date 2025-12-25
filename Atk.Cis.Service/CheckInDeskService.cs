@@ -18,20 +18,21 @@ public class CheckInDeskService : ICheckInDeskService
     {
         var cutoff = DateTime.UtcNow - maxDuration;
 
-        var sessionsToClose = _dbContext.CheckInSessions
-            .Where(s =>
-                s.ClosedAt == null &&
-                s.OpenedAt <= cutoff)
-            .ToList();
+        //var sessionsToClose = _dbContext.CheckInSessions
+        //.Where(s =>
+        //s.ClosedAt == null &&
+        //s.OpenedAt <= cutoff)
+        //.ToList();
 
-        foreach (var session in sessionsToClose)
-        {
-            session.ClosedAt = DateTimeOffset.Now;
-        }
+        //foreach (var session in sessionsToClose)
+        //{
+        //session.ClosedAt = DateTimeOffset.Now;
+        //}
 
-        _ = _dbContext.SaveChangesAsync();
+        //_ = _dbContext.SaveChangesAsync();
 
-        return $"Cleaned up {sessionsToClose.Count()} stale sessions.";
+        //return $"Cleaned up {sessionsToClose.Count()} stale sessions.";
+        return "not implemented";
     }
 
     public async Task<string> SignUp(string firstName, string lastName, DateTimeOffset birthday)

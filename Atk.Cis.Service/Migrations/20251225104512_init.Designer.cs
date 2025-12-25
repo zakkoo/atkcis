@@ -11,40 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Atk.Cis.Service.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251224231841_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251225104512_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.1");
-
-            modelBuilder.Entity("Atk.Cis.Service.Models.CheckInSession", b =>
-                {
-                    b.Property<Guid>("SessionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTimeOffset?>("ClosedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTimeOffset>("OpenedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("PartnerCount")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("SessionId");
-
-                    b.ToTable("CheckInSessions", (string)null);
-                });
 
             modelBuilder.Entity("Atk.Cis.Service.Models.User", b =>
                 {
@@ -64,6 +38,26 @@ namespace Atk.Cis.Service.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("Atk.Cis.Service.Models.UserSession", b =>
+                {
+                    b.Property<Guid>("SessionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset?>("ClosedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("OpenedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("SessionId");
+
+                    b.ToTable("CheckInSessions", (string)null);
                 });
 #pragma warning restore 612, 618
         }
