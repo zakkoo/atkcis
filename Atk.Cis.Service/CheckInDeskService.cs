@@ -39,8 +39,8 @@ public class CheckInDeskService : ICheckInDeskService
 
     public async Task<string> GetBarcode(string firstName, string lastName, DateTimeOffset birthday)
     {
-        var user = _dbContext.Users.FirstOrDefault(x => x.FirstName != null && x.FirstName.ToLowerInvariant() == firstName.ToLowerInvariant() &&
-                x.LastName != null && lastName.ToLowerInvariant() == x.LastName.ToLowerInvariant() &&
+        var user = _dbContext.Users.FirstOrDefault(x => x.FirstName != null && x.FirstName.ToLower() == firstName.ToLower() &&
+                x.LastName != null && lastName.ToLower() == x.LastName.ToLower() &&
                 x.Birthday == birthday);
         if (user == null) return string.Empty;
         var barcode = Code128Encoder.Encode(user.Code);
