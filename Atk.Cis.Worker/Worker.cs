@@ -27,7 +27,6 @@ public class Worker : BackgroundService
 
             if (true) // need some 1 hour interval here also comming from config
             {
-
                 var maxDurationMinutes = _config.GetValue<int>("SessionCleanup:MaxDurationMinutes");
                 using var scope = _scopeFactory.CreateScope();
                 _desk = scope.ServiceProvider.GetRequiredService<ICheckInDeskService>();
