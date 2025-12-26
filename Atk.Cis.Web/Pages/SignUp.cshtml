@@ -1,0 +1,24 @@
+@page
+@model Atk.Cis.Web.Pages.SignUpModel
+@{
+    ViewData["Title"] = "Sign up";
+}
+
+<h1>Sign up</h1>
+
+<form method="post">
+    <label for="firstName">First name</label>
+    <input id="firstName" name="FirstName" value="@Model.FirstName" />
+
+    <label for="lastName">Last name</label>
+    <input id="lastName" name="LastName" value="@Model.LastName" />
+
+    <label for="birthday">Birthday</label>
+    <input id="birthday" name="Birthday" type="date" value="@Model.Birthday.ToString("yyyy-MM-dd")" />
+
+    <button type="submit">Create account</button>
+</form>
+
+    <div>
+        @Html.Raw(Model.StatusMessage)
+    </div>

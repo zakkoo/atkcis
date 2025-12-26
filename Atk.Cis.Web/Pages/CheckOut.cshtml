@@ -1,0 +1,15 @@
+@page
+@model Atk.Cis.Web.Pages.CheckOutModel
+@{
+    ViewData["Title"] = "Check-out";
+}
+
+<h1>Check-out</h1>
+
+<form method="post">
+    <label for="code">Code</label>
+    <input id="code" name="Code" value="@Model.Code" />
+    <button type="submit">Check-out</button>
+</form>
+
+<p>@Model.StatusMessage</p>

@@ -1,0 +1,32 @@
+@page
+@model Atk.Cis.Web.Pages.GetBarcodeModel
+@{
+    ViewData["Title"] = "Get barcode";
+}
+
+<h1>Get barcode</h1>
+
+<form method="post">
+    <label for="firstName">First name</label>
+    <input id="firstName" name="FirstName" value="@Model.FirstName" />
+
+    <label for="lastName">Last name</label>
+    <input id="lastName" name="LastName" value="@Model.LastName" />
+
+    <label for="birthday">Birthday</label>
+    <input id="birthday" name="Birthday" type="date" value="@Model.Birthday.ToString("yyyy-MM-dd")" />
+
+    <button type="submit">Get barcode</button>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+{
+    <p>@Model.StatusMessage</p>
+}
+
+@if (Model.HasBarcode)
+{
+    <div>
+        @Html.Raw(Model.BarcodeSvg)
+    </div>
+}

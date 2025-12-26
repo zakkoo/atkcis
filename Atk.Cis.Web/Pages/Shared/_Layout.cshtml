@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Atk.Cis.Web</title>
+</head>
+<body>
+    <nav>
+        <a asp-page="/Index">Home</a>
+        <a asp-page="/CheckIn">Check-in</a>
+        <a asp-page="/CheckOut">Check-out</a>
+        <a asp-page="/SignUp">Sign up</a>
+        <a asp-page="/GetBarcode">Get barcode</a>
+        <a asp-page="/Admin/Cleanup">Cleanup</a>
+    </nav>
+    <main role="main">
+        @RenderBody()
+    </main>
+</body>
+</html>
