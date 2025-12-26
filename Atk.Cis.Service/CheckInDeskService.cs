@@ -4,6 +4,7 @@ using Atk.Cis.Service.Models;
 using Barcoder.Code128;
 using Barcoder.Renderer.Svg;
 using Microsoft.EntityFrameworkCore;
+using Atk.Cis.Service.Enums;
 
 namespace Atk.Cis.Service;
 
@@ -16,7 +17,10 @@ public class CheckInDeskService : ICheckInDeskService
     {
         _dbContext = dbContext;
     }
-
+    public async Task<List<User>> GetUsers()
+    {
+        return await _dbContext.Users.ToListAsync();
+    }
     public async Task<string> CleanupStaleSessions(TimeSpan maxDuration)
     {
         var cutoff = DateTimeOffset.UtcNow - maxDuration;
@@ -34,6 +38,7 @@ public class CheckInDeskService : ICheckInDeskService
         foreach (var session in sessionsToClose)
         {
             session.ClosedAt = DateTimeOffset.UtcNow;
+            session.ClosedBy = ClosedByType.Worker;
         }
 
         await _dbContext.SaveChangesAsync();
@@ -105,6 +110,7 @@ public class CheckInDeskService : ICheckInDeskService
         var checkInSession = _dbContext.CheckInSessions.FirstOrDefault(x => x.UserId == user.Id && x.ClosedAt == null);
         if (checkInSession == null) return $"Check-out failed for {user.FirstName} {user.LastName} because there is no open session.";
         checkInSession.ClosedAt = DateTimeOffset.Now;
+        checkInSession.ClosedBy = ClosedByType.User;
         _ = _dbContext.SaveChangesAsync();
         return $"{user.FirstName} {user.LastName} checked out.";
     }

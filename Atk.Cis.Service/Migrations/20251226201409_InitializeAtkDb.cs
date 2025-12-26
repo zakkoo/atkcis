@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Atk.Cis.Service.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class InitializeAtkDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,7 +18,8 @@ namespace Atk.Cis.Service.Migrations
                     SessionId = table.Column<Guid>(type: "TEXT", nullable: false),
                     UserId = table.Column<Guid>(type: "TEXT", nullable: false),
                     OpenedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
-                    ClosedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: true)
+                    ClosedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
+                    ClosedBy = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
