@@ -21,6 +21,14 @@ public static class ServiceCollectionExtensions
 
             if (!string.IsNullOrWhiteSpace(databasePath))
             {
+                databasePath = Environment.ExpandEnvironmentVariables(databasePath);
+
+                if (databasePath.StartsWith("~", StringComparison.Ordinal))
+                {
+                    var homeDirectory = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                    var trimmedPath = databasePath.TrimStart('~', Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                    databasePath = Path.Combine(homeDirectory, trimmedPath);
+                }
                 var fullPath = Path.GetFullPath(databasePath);
                 var directory = Path.GetDirectoryName(fullPath);
 
