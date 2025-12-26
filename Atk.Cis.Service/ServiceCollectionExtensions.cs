@@ -37,7 +37,7 @@ public static class ServiceCollectionExtensions
             }
             else
             {
-                options.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+                throw new Exception("Check your database configuration.");
             }
         });
 
