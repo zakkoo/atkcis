@@ -1,4 +1,3 @@
-using Atk.Cis.Service;
 using Atk.Cis.Service.Interfaces;
 
 namespace Atk.Cis.Worker;
