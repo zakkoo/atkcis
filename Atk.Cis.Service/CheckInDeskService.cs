@@ -17,7 +17,10 @@ public class CheckInDeskService : ICheckInDeskService
     {
         _dbContext = dbContext;
     }
-
+    public async Task<List<UserSession>> GetUserSessions()
+    {
+        return await _dbContext.UserSessions.ToListAsync();
+    }
     public async Task<List<User>> GetUsers()
     {
         return await _dbContext.Users.ToListAsync();
@@ -26,7 +29,7 @@ public class CheckInDeskService : ICheckInDeskService
     {
         var cutoff = DateTimeOffset.UtcNow - maxDuration;
 
-        var sessionsToClose = (await _dbContext.CheckInSessions
+        var sessionsToClose = (await _dbContext.UserSessions
                         .Where(session => session.ClosedAt == null)
                         .ToListAsync())
                     .Where(session => session.OpenedAt <= cutoff)
@@ -88,7 +91,7 @@ public class CheckInDeskService : ICheckInDeskService
 
         if (user == null) return "Invalid barcode. Check-in was cancelled.";
 
-        var checkInSession = _dbContext.CheckInSessions.FirstOrDefault(x => x.UserId == user.Id && x.ClosedAt == null);
+        var checkInSession = _dbContext.UserSessions.FirstOrDefault(x => x.UserId == user.Id && x.ClosedAt == null);
         if (checkInSession == null)
         {
             checkInSession = new UserSession
@@ -97,7 +100,7 @@ public class CheckInDeskService : ICheckInDeskService
                 UserId = user.Id,
                 OpenedAt = DateTimeOffset.Now,
             };
-            _dbContext.CheckInSessions.Add(checkInSession);
+            _dbContext.UserSessions.Add(checkInSession);
             _ = _dbContext.SaveChangesAsync();
             return $"{user.FirstName} {user.LastName} checked in.";
         }
@@ -108,7 +111,7 @@ public class CheckInDeskService : ICheckInDeskService
     {
         var user = _dbContext.Users.SingleOrDefault(x => x.Code == code.ToLowerInvariant());
         if (user == null) return "Invalid barcode. Check-out was cancelled.";
-        var checkInSession = _dbContext.CheckInSessions.FirstOrDefault(x => x.UserId == user.Id && x.ClosedAt == null);
+        var checkInSession = _dbContext.UserSessions.FirstOrDefault(x => x.UserId == user.Id && x.ClosedAt == null);
         if (checkInSession == null) return $"Check-out failed for {user.FirstName} {user.LastName} because there is no open session.";
         checkInSession.ClosedAt = DateTimeOffset.Now;
         checkInSession.ClosedBy = ClosedByType.User;

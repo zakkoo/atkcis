@@ -9,4 +9,5 @@ public interface ICheckInDeskService
     Task<string> CleanupStaleSessions(TimeSpan maxDuration);
     Task<string> GetBarcode(string firstName, string lastName, DateTimeOffset birthday);
     Task<List<User>> GetUsers();
+    Task<List<UserSession>> GetUserSessions();
 }
