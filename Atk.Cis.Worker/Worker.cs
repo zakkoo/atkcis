@@ -31,7 +31,7 @@ public class Worker : BackgroundService
                 using var scope = _scopeFactory.CreateScope();
                 _desk = scope.ServiceProvider.GetRequiredService<ICheckInDeskService>();
                 var result = await _desk.CleanupStaleSessions(TimeSpan.FromMinutes(maxDurationMinutes));
-                Console.WriteLine(result);
+                _logger.LogInformation(result);
             }
 
             var input = Console.ReadLine();
@@ -49,7 +49,7 @@ public class Worker : BackgroundService
                 using var scope = _scopeFactory.CreateScope();
                 _desk = scope.ServiceProvider.GetRequiredService<ICheckInDeskService>();
                 var result = await _desk.CheckIn(input);
-                Console.WriteLine(result);
+                _logger.LogInformation(result);
             }
 
 
@@ -74,14 +74,14 @@ public class Worker : BackgroundService
                 _logger.LogInformation($"todo...");
                 break;
             case "help":
-                Console.WriteLine(":status | :help | :quit");
+                _logger.LogInformation(":status | :help | :quit");
                 break;
             case "test":
                 {
                     using var scope = _scopeFactory.CreateScope();
                     _desk = scope.ServiceProvider.GetRequiredService<ICheckInDeskService>();
                     var result = await _desk.SignUp("Zakaria", "Agoulif", DateTimeOffset.Now);
-                    Console.WriteLine(result);
+                    _logger.LogInformation(result);
                 }
                 break;
             default:
