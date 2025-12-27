@@ -1,0 +1,73 @@
+@page
+@model Atk.Cis.Web.Pages.Admin.DataModel
+@{
+    ViewData["Title"] = "Admin - Data";
+}
+
+<h1>Admin Data</h1>
+
+<p>Enter the admin password to fetch users and session data.</p>
+
+<form method="post">
+    <label for="password">Admin password</label>
+    <input id="password" name="Password" type="password" />
+    <button type="submit">Load data</button>
+</form>
+
+<p>@Model.StatusMessage</p>
+
+@if (Model.Users.Count > 0)
+{
+    <h2>Users</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Birthday</th>
+                <th>Code</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var user in Model.Users)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.FirstName</td>
+                <td>@user.LastName</td>
+                <td>@user.Birthday</td>
+                <td>@user.Code</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@if (Model.UserSessions.Count > 0)
+{
+    <h2>User Sessions</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Session Id</th>
+                <th>User Id</th>
+                <th>Opened</th>
+                <th>Closed</th>
+                <th>Closed by</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var session in Model.UserSessions)
+        {
+            <tr>
+                <td>@session.SessionId</td>
+                <td>@session.UserId</td>
+                <td>@session.OpenedAt</td>
+                <td>@session.ClosedAt</td>
+                <td>@session.ClosedBy</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
