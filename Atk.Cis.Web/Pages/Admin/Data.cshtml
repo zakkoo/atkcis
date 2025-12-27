@@ -55,6 +55,7 @@
                 <th>Opened</th>
                 <th>Closed</th>
                 <th>Closed by</th>
+                <th>Closed by</th>
             </tr>
         </thead>
         <tbody>
@@ -62,10 +63,11 @@
         {
             <tr>
                 <td>@session.SessionId</td>
-                <td>@session.UserId</td>
+                <td>@session.UserDisplayName</td>
                 <td>@session.OpenedAt</td>
                 <td>@session.ClosedAt</td>
                 <td>@session.ClosedBy</td>
+                <td>@session.Duration</td>
             </tr>
         }
         </tbody>

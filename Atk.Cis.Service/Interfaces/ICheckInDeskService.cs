@@ -1,4 +1,5 @@
 using Atk.Cis.Service.Models;
+using Atk.Cis.Service.Dtos;
 namespace Atk.Cis.Service.Interfaces;
 
 public interface ICheckInDeskService
@@ -9,5 +10,5 @@ public interface ICheckInDeskService
     Task<string> CleanupStaleSessions(TimeSpan maxDuration);
     Task<string> GetBarcode(string firstName, string lastName, DateTimeOffset birthday);
     Task<List<User>> GetUsers();
-    Task<List<UserSession>> GetUserSessions();
+    Task<List<UserSessionDto>> GetUserSessions();
 }
