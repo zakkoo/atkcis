@@ -6,7 +6,7 @@ namespace Atk.Cis.Service.Data;
 public class AppDbContext : DbContext
 {
     public DbSet<User> Users => Set<User>();
-    public DbSet<UserSession> CheckInSessions => Set<UserSession>();
+    public DbSet<UserSession> UserSessions => Set<UserSession>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
