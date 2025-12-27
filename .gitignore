@@ -60,3 +60,4 @@ nunit-*.xml
 .DS_Store
 *.db
 publish/
+.vscode/
