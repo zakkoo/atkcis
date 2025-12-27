@@ -49,6 +49,9 @@ namespace Atk.Cis.Service.Migrations
                     b.Property<DateTimeOffset?>("ClosedAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("ClosedBy")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTimeOffset>("OpenedAt")
                         .HasColumnType("TEXT");
 

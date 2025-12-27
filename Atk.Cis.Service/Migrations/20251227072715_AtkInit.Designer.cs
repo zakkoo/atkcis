@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Atk.Cis.Service.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251225154534_init")]
-    partial class init
+    [Migration("20251227072715_AtkInit")]
+    partial class AtkInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,6 +51,9 @@ namespace Atk.Cis.Service.Migrations
 
                     b.Property<DateTimeOffset?>("ClosedAt")
                         .HasColumnType("TEXT");
+
+                    b.Property<int?>("ClosedBy")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTimeOffset>("OpenedAt")
                         .HasColumnType("TEXT");
