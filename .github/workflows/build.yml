@@ -55,7 +55,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: atk-cis-${{ matrix.rid }}
+          name: ${{ github.ref_name }}_atk-cis-${{ matrix.rid }}
           path: |
             publish/worker-${{ matrix.rid }}
             publish/web-${{ matrix.rid }}
@@ -94,12 +94,12 @@ jobs:
       - name: Archive artifacts
         run: |
           mkdir -p dist
-          zip -r dist/atk-cis-linux-x64.zip publish/worker-linux-x64 publish/web-linux-x64
-          zip -r dist/atk-cis-linux-arm64.zip publish/worker-linux-arm64 publish/web-linux-arm64
+          zip -r dist/${{ github.ref_name }}_atk-cis-linux-x64.zip publish/worker-linux-x64 publish/web-linux-x64
+          zip -r dist/${{ github.ref_name }}_atk-cis-linux-arm64.zip publish/worker-linux-arm64 publish/web-linux-arm64
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            dist/atk-cis-linux-x64.zip
-            dist/atk-cis-linux-arm64.zip
+            dist/${{ github.ref_name }}_atk-cis-linux-x64.zip
+            dist/${{ github.ref_name }}_atk-cis-linux-arm64.zip
