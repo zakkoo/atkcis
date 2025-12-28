@@ -3,20 +3,47 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Atk.Cis.Web</title>
+    <title>@ViewData["Title"] - ATK Check-in Desk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        terminal: ['"Share Tech Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace']
+                    },
+                    colors: {
+                        terminal: {
+                            glow: '#00ff9c'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-    <nav>
-        <a asp-page="/Index">Home</a>
-        <a asp-page="/CheckIn">Check-in</a>
-        <a asp-page="/CheckOut">Check-out</a>
-        <a asp-page="/SignUp">Sign up</a>
-        <a asp-page="/GetBarcode">Get barcode</a>
-        <a asp-page="/Admin/Cleanup">Cleanup</a>
-        <a asp-page="/Admin/Data">Admin data</a>
-    </nav>
-    <main role="main">
-        @RenderBody()
-    </main>
+<body class="min-h-screen bg-black text-terminal-glow font-terminal">
+    <div class="min-h-screen px-6 py-8 md:px-12">
+        <header class="mb-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div class="text-xl tracking-[0.3em] text-terminal-glow/90">
+                --> ATK - Check-in Desk
+            </div>
+            <nav class="flex flex-wrap gap-6 text-sm uppercase tracking-[0.2em] text-terminal-glow/70">
+                <a class="transition hover:text-terminal-glow" asp-page="/Index">Home</a>
+                <a class="transition hover:text-terminal-glow" asp-page="/CheckIn">Check-in</a>
+                <a class="transition hover:text-terminal-glow" asp-page="/CheckOut">Check-out</a>
+                <a class="transition hover:text-terminal-glow" asp-page="/SignUp">Sign up</a>
+                <a class="transition hover:text-terminal-glow" asp-page="/GetBarcode">Get barcode</a>
+                <a class="transition hover:text-terminal-glow" asp-page="/Admin/Cleanup">Cleanup</a>
+                <a class="transition hover:text-terminal-glow" asp-page="/Admin/Data">Admin data</a>
+            </nav>
+        </header>
+        <main role="main" class="max-w-3xl space-y-6 text-base leading-relaxed text-terminal-glow/80">
+            @RenderBody()
+        </main>
+    </div>
 </body>
 </html>
