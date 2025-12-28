@@ -1,5 +1,4 @@
 using Serilog;
-using Serilog.Events;
 using Atk.Cis.Service;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,8 +8,6 @@ builder.Services.AddCisServices(builder.Configuration);
 
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
     .Enrich.FromLogContext()
     .WriteTo.File(
         path: "logs/web-.log",

@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Text;
 using Atk.Cis.Service.Enums;
 using Atk.Cis.Service.Data;
 using Atk.Cis.Service.Dtos;
@@ -68,10 +70,8 @@ public class CheckInDeskService : ICheckInDeskService
 
     public async Task<string> GetBarcode(string firstName, string lastName, DateTimeOffset birthday)
     {
-        var user = _dbContext.Users.FirstOrDefault(x => x.FirstName != null && x.FirstName.ToLower() == firstName.ToLower() &&
-                x.LastName != null && lastName.ToLower() == x.LastName.ToLower() &&
-                x.Birthday == birthday);
-        if (user == null) return string.Empty;
+        var user = GetUser(firstName, lastName, birthday);
+        if (user == null) return "Barcode retrieval failed. Double check your inputs.";
         var barcode = Code128Encoder.Encode(user.Code);
         var renderer = new SvgRenderer();
         using (var stream = new MemoryStream())
@@ -87,8 +87,13 @@ public class CheckInDeskService : ICheckInDeskService
 
     public async Task<string> SignUp(string firstName, string lastName, DateTimeOffset birthday)
     {
+        var user = GetUser(firstName, lastName, birthday);
+        if (user != null) return "Signup failed because user exists already!";
+
         var code = GenerateCode(firstName, lastName);
-        var user = new User
+
+        if (code == null) return "Sign-up failed. Check your inputs!";
+        user = new User
         {
             FirstName = firstName,
             LastName = lastName,
@@ -103,9 +108,12 @@ public class CheckInDeskService : ICheckInDeskService
 
     public async Task<string> CheckIn(string code)
     {
+        var errorMessage = "Invalid barcode. Check-in was cancelled.";
+        if (string.IsNullOrEmpty(code)) return errorMessage;
+
         var user = _dbContext.Users.SingleOrDefault(x => x.Code == code.ToLowerInvariant());
 
-        if (user == null) return "Invalid barcode. Check-in was cancelled.";
+        if (user == null) return errorMessage;
 
         var checkInSession = _dbContext.UserSessions.FirstOrDefault(x => x.UserId == user.Id && x.ClosedAt == null);
         if (checkInSession == null)
@@ -125,6 +133,7 @@ public class CheckInDeskService : ICheckInDeskService
 
     public async Task<string> CheckOut(string code)
     {
+        if (string.IsNullOrEmpty(code)) return "Checkout failed due to invalid input.";
         var user = _dbContext.Users.SingleOrDefault(x => x.Code == code.ToLowerInvariant());
         if (user == null) return "Invalid barcode. Check-out was cancelled.";
         var checkInSession = _dbContext.UserSessions.FirstOrDefault(x => x.UserId == user.Id && x.ClosedAt == null);
@@ -135,10 +144,18 @@ public class CheckInDeskService : ICheckInDeskService
         return $"{user.FirstName} {user.LastName} checked out.";
     }
 
-
-    private string GenerateCode(string firstName, string lastName)
+    private User? GetUser(string firstName, string lastName, DateTimeOffset birthday)
     {
-        var prefix = (lastName[..2] + firstName[0]).ToLowerInvariant();
+        if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName)) return null;
+        return _dbContext.Users.FirstOrDefault(x => x.FirstName != null && x.FirstName.ToLower() == firstName.ToLower() &&
+                x.LastName != null && lastName.ToLower() == x.LastName.ToLower() &&
+                x.Birthday == birthday);
+    }
+
+    private string? GenerateCode(string firstName, string lastName)
+    {
+        if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName)) return null;
+        var prefix = NormalizeString((lastName[..2] + firstName[0]).ToLowerInvariant());
 
         if (!_dbContext.Users.Any(x => x.Code == prefix))
             return prefix;
@@ -153,5 +170,19 @@ public class CheckInDeskService : ICheckInDeskService
         }
 
         return candidate;
+    }
+
+    private static string NormalizeString(string input)
+    {
+        string normalized = input.Normalize(NormalizationForm.FormD);
+        StringBuilder sb = new StringBuilder();
+        foreach (char c in normalized)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+            {
+                sb.Append(c);
+            }
+        }
+        return sb.ToString().Normalize(NormalizationForm.FormC);
     }
 }

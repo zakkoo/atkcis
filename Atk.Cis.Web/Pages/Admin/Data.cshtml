@@ -8,10 +8,12 @@
 
 <p>Enter the admin password to fetch users and session data.</p>
 
-<form method="post">
-    <label for="password">Admin password</label>
-    <input id="password" name="Password" type="password" />
-    <button type="submit">Load data</button>
+<form method="post" class="space-y-4">
+    <div class="space-y-1">
+        <label for="password" class="text-xs uppercase tracking-[0.2em] text-terminal-glow/70">Admin password</label>
+        <input id="password" name="Password" type="password" class="w-full max-w-md rounded border border-terminal-glow/50 bg-black px-3 py-2 text-terminal-glow focus:border-terminal-glow focus:outline-none focus:ring-2 focus:ring-terminal-glow/40" />
+    </div>
+    <button type="submit" class="inline-flex items-center justify-center rounded border border-terminal-glow px-4 py-2 text-terminal-glow transition hover:border-terminal-glow/80 hover:bg-terminal-glow/10">Load data</button>
 </form>
 
 <p>@Model.StatusMessage</p>
@@ -19,53 +21,61 @@
 @if (Model.Users.Count > 0)
 {
     <h2>Users</h2>
-    <table>
-        <thead>
+    <div class="w-screen max-w-none -mx-6 md:-mx-12">
+        <div class="overflow-x-auto rounded border border-terminal-glow/30 bg-black/40">
+            <table class="w-full border-collapse text-left text-sm">
+                <thead class="bg-terminal-glow/10 text-terminal-glow">
             <tr>
-                <th>First name</th>
-                <th>Last name</th>
-                <th>Birthday</th>
-                <th>Code</th>
+                <th class="px-3 py-2 text-xs uppercase tracking-[0.2em]">First name</th>
+                <th class="px-3 py-2 text-xs uppercase tracking-[0.2em]">Last name</th>
+                <th class="px-3 py-2 text-xs uppercase tracking-[0.2em]">Birthday</th>
+                <th class="px-3 py-2 text-xs uppercase tracking-[0.2em]">Code</th>
             </tr>
-        </thead>
-        <tbody>
+                </thead>
+                <tbody class="divide-y divide-terminal-glow/20 text-terminal-glow/80">
         @foreach (var user in Model.Users)
         {
             <tr>
-                <td>@user.FirstName</td>
-                <td>@user.LastName</td>
-                <td>@user.Birthday?.ToString("dd.MM.yyyy")</td>
-                <td>@user.Code</td>
+                <td class="px-3 py-2">@user.FirstName</td>
+                <td class="px-3 py-2">@user.LastName</td>
+                <td class="px-3 py-2">@user.Birthday?.ToString("dd.MM.yyyy")</td>
+                <td class="px-3 py-2">@user.Code</td>
             </tr>
         }
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        </div>
+    </div>
 }
 
 @if (Model.UserSessions.Count > 0)
 {
     <h2>User Sessions</h2>
-    <table>
-        <thead>
+    <div class="w-screen max-w-none -mx-6 md:-mx-12">
+        <div class="overflow-x-auto rounded border border-terminal-glow/30 bg-black/40">
+            <table class="w-full border-collapse text-left text-sm">
+                <thead class="bg-terminal-glow/10 text-terminal-glow">
             <tr>
-                <th>Attakkee</th>
-                <th>Opened at</th>
-                <th>Closed at</th>
-                <th>Closed by</th>
-                <th>Duration</th>
+                <th class="px-3 py-2 text-xs uppercase tracking-[0.2em]">Attakkee</th>
+                <th class="px-3 py-2 text-xs uppercase tracking-[0.2em]">Opened at</th>
+                <th class="px-3 py-2 text-xs uppercase tracking-[0.2em]">Closed at</th>
+                <th class="px-3 py-2 text-xs uppercase tracking-[0.2em]">Closed by</th>
+                <th class="px-3 py-2 text-xs uppercase tracking-[0.2em]">Duration</th>
             </tr>
-        </thead>
-        <tbody>
+                </thead>
+                <tbody class="divide-y divide-terminal-glow/20 text-terminal-glow/80">
         @foreach (var session in Model.UserSessions)
         {
             <tr>
-                <td>@session.UserDisplayName</td>
-                <td>@session.OpenedAt</td>
-                <td>@session.ClosedAt</td>
-                <td>@session.ClosedBy</td>
-                <td>@session.Duration</td>
+                <td class="px-3 py-2">@session.UserDisplayName</td>
+                <td class="px-3 py-2">@session.OpenedAt</td>
+                <td class="px-3 py-2">@session.ClosedAt</td>
+                <td class="px-3 py-2">@session.ClosedBy</td>
+                <td class="px-3 py-2">@session.Duration</td>
             </tr>
         }
-        </tbody>
-    </table>
+                </tbody>
+            </table>
+        </div>
+    </div>
 }
