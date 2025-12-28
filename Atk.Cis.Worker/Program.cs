@@ -1,13 +1,10 @@
 using Serilog;
-using Serilog.Events;
 using Atk.Cis.Worker;
 using Atk.Cis.Service;
 
 var builder = Host.CreateApplicationBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
     .Enrich.FromLogContext()
     .WriteTo.File(
         path: "logs/worker-.log",

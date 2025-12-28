@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Text;
 using Atk.Cis.Service.Enums;
 using Atk.Cis.Service.Data;
 using Atk.Cis.Service.Dtos;
@@ -138,7 +140,7 @@ public class CheckInDeskService : ICheckInDeskService
 
     private string GenerateCode(string firstName, string lastName)
     {
-        var prefix = (lastName[..2] + firstName[0]).ToLowerInvariant();
+        var prefix = NormalizeString((lastName[..2] + firstName[0]).ToLowerInvariant());
 
         if (!_dbContext.Users.Any(x => x.Code == prefix))
             return prefix;
@@ -153,5 +155,19 @@ public class CheckInDeskService : ICheckInDeskService
         }
 
         return candidate;
+    }
+
+    private static string NormalizeString(string input)
+    {
+        string normalized = input.Normalize(NormalizationForm.FormD);
+        StringBuilder sb = new StringBuilder();
+        foreach (char c in normalized)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+            {
+                sb.Append(c);
+            }
+        }
+        return sb.ToString().Normalize(NormalizationForm.FormC);
     }
 }
