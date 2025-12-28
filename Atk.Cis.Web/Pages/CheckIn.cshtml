@@ -6,10 +6,12 @@
 
 <h1>Check-in</h1>
 
-<form method="post">
-    <label for="code">Code</label>
-    <input id="code" name="Code" value="@Model.Code" />
-    <button type="submit">Check-in</button>
+<form method="post" class="space-y-4">
+    <div class="space-y-1">
+        <label for="code" class="text-xs uppercase tracking-[0.2em] text-terminal-glow/70">Code</label>
+        <input id="code" name="Code" value="@Model.Code" class="w-full max-w-md rounded border border-terminal-glow/50 bg-black px-3 py-2 text-terminal-glow focus:border-terminal-glow focus:outline-none focus:ring-2 focus:ring-terminal-glow/40" />
+    </div>
+    <button type="submit" class="inline-flex items-center justify-center rounded border border-terminal-glow px-4 py-2 text-terminal-glow transition hover:border-terminal-glow/80 hover:bg-terminal-glow/10">Check-in</button>
 </form>
 
 <p>@Model.StatusMessage</p>
