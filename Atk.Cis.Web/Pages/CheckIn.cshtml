@@ -108,7 +108,7 @@
                 } else {
                     status.textContent = 'Loading barcode scanner...';
                     fallbackLoader = fallbackLoader
-                        ?? import('https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.4/esm/index.min.js');
+                        ?? import('https://cdn.jsdelivr.net/npm/@@zxing/browser@0.1.4/esm/index.min.js');
                     const zx = await fallbackLoader;
                     fallbackScanner = new zx.BrowserMultiFormatReader();
                     status.textContent = 'Point the camera at the barcode.';
