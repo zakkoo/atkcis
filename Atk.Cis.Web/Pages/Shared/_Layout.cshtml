@@ -28,17 +28,28 @@
 <body class="min-h-screen bg-black text-terminal-glow font-terminal">
     <div class="min-h-screen px-6 py-8 md:px-12">
         <header class="mb-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <div class="text-xl tracking-[0.3em] text-terminal-glow/90">
-                ATK - Check-in Desk
+            <div class="text-3xl tracking-[0.3em] text-terminal-glow/90">
+                <a class="transition hover:text-terminal-glow" asp-page="/Index">ATK - Check-in Desk</a>
             </div>
-            <nav class="flex flex-wrap gap-6 text-sm uppercase tracking-[0.2em] text-terminal-glow/70">
-                <a class="transition hover:text-terminal-glow" asp-page="/Index">Home</a>
-                <a class="transition hover:text-terminal-glow" asp-page="/SignUp">Sign up</a>
-                <a class="transition hover:text-terminal-glow" asp-page="/CheckIn">Check-in</a>
-                <a class="transition hover:text-terminal-glow" asp-page="/CheckOut">Check-out</a>
-                <a class="transition hover:text-terminal-glow" asp-page="/GetBarcode">Get barcode</a>
-                <a class="transition hover:text-terminal-glow" asp-page="/Admin/Cleanup">Cleanup</a>
-                <a class="transition hover:text-terminal-glow" asp-page="/Admin/Data">Admin data</a>
+            <nav class="text-sm uppercase tracking-[0.2em] text-terminal-glow/70">
+                <ul class="flex flex-wrap gap-6">
+                    <li><a class="transition hover:text-terminal-glow" asp-page="/Index">Home</a></li>
+                    <li><a class="transition hover:text-terminal-glow" asp-page="/SignUp">Sign up</a></li>
+                    <li><a class="transition hover:text-terminal-glow" asp-page="/CheckIn">Check me in</a></li>
+                    <li><a class="transition hover:text-terminal-glow" asp-page="/CheckOut">Check me out</a></li>
+                    <li><a class="transition hover:text-terminal-glow" asp-page="/GetBarcode">My Barcode</a></li>
+                    <li>
+                        <details class="group relative">
+                            <summary class="cursor-pointer list-none text-terminal-glow/70 transition hover:text-terminal-glow">
+                                Admin
+                            </summary>
+                            <ul class="mt-2 hidden flex-col gap-2 text-terminal-glow/60 group-hover:flex group-open:flex">
+                                <li><a class="transition hover:text-terminal-glow" asp-page="/Admin/Cleanup">Cleanup</a></li>
+                                <li><a class="transition hover:text-terminal-glow" asp-page="/Admin/Data">Data</a></li>
+                            </ul>
+                        </details>
+                    </li>
+                </ul>
             </nav>
         </header>
         <main role="main" class="max-w-3xl space-y-6 text-base leading-relaxed text-terminal-glow/80">

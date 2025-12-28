@@ -71,7 +71,7 @@ public class CheckInDeskService : ICheckInDeskService
     public async Task<string> GetBarcode(string firstName, string lastName, DateTimeOffset birthday)
     {
         var user = GetUser(firstName, lastName, birthday);
-        if (user == null) return "Barcode retrieval failed. Double check your inputs.";
+        if (user == null) return "We couldn't find a match for those details. Please check and try again.";
         var barcode = Code128Encoder.Encode(user.Code);
         var renderer = new SvgRenderer();
         using (var stream = new MemoryStream())
@@ -88,11 +88,11 @@ public class CheckInDeskService : ICheckInDeskService
     public async Task<string> SignUp(string firstName, string lastName, DateTimeOffset birthday)
     {
         var user = GetUser(firstName, lastName, birthday);
-        if (user != null) return "Signup failed because user exists already!";
+        if (user != null) return "That user already exists.";
 
         var code = GenerateCode(firstName, lastName);
 
-        if (code == null) return "Sign-up failed. Check your inputs!";
+        if (code == null) return "We couldn't complete the sign-up. Please review the details and try again.";
         user = new User
         {
             FirstName = firstName,
@@ -108,7 +108,7 @@ public class CheckInDeskService : ICheckInDeskService
 
     public async Task<string> CheckIn(string code)
     {
-        var errorMessage = "Invalid barcode. Check-in was cancelled.";
+        var errorMessage = "That barcode isn't valid. Check-in was not completed.";
         if (string.IsNullOrEmpty(code)) return errorMessage;
 
         var user = _dbContext.Users.SingleOrDefault(x => x.Code == code.ToLowerInvariant());
@@ -126,22 +126,22 @@ public class CheckInDeskService : ICheckInDeskService
             };
             _dbContext.UserSessions.Add(checkInSession);
             _ = _dbContext.SaveChangesAsync();
-            return $"{user.FirstName} {user.LastName} checked in.";
+            return $"Check-in complete for {user.FirstName} {user.LastName}.";
         }
         return await CheckOut(code);
     }
 
     public async Task<string> CheckOut(string code)
     {
-        if (string.IsNullOrEmpty(code)) return "Checkout failed due to invalid input.";
+        if (string.IsNullOrEmpty(code)) return "We couldn't check out with that input. Please try again.";
         var user = _dbContext.Users.SingleOrDefault(x => x.Code == code.ToLowerInvariant());
-        if (user == null) return "Invalid barcode. Check-out was cancelled.";
+        if (user == null) return "That barcode isn't valid. Check-out was not completed.";
         var checkInSession = _dbContext.UserSessions.FirstOrDefault(x => x.UserId == user.Id && x.ClosedAt == null);
-        if (checkInSession == null) return $"Check-out failed for {user.FirstName} {user.LastName} because there is no open session.";
+        if (checkInSession == null) return $"No open session for {user.FirstName} {user.LastName}. Check-out was not completed.";
         checkInSession.ClosedAt = DateTimeOffset.Now;
         checkInSession.ClosedBy = ClosedByType.User;
         _ = _dbContext.SaveChangesAsync();
-        return $"{user.FirstName} {user.LastName} checked out.";
+        return $"Check-out complete for {user.FirstName} {user.LastName}.";
     }
 
     private User? GetUser(string firstName, string lastName, DateTimeOffset birthday)
