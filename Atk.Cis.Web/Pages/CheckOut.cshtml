@@ -31,6 +31,7 @@
     </form>
     <div class="space-y-3 p-4">
         <video class="aspect-video w-full rounded border border-terminal-glow/30 bg-black" playsinline></video>
+        <div id="barcodeFallback" class="hidden overflow-hidden rounded border border-terminal-glow/30"></div>
         <p id="barcodeStatus" class="text-xs text-terminal-glow/70">Allow camera access to scan the barcode.</p>
     </div>
 </dialog>
@@ -47,6 +48,7 @@
         const form = scanButton.closest('form');
         const input = form?.querySelector('input[name="Code"]');
         const video = dialog.querySelector('video');
+        const fallbackContainer = document.getElementById('barcodeFallback');
         let stream;
         let detector;
         let rafId;
@@ -59,7 +61,7 @@
                 rafId = null;
             }
             if (fallbackScanner) {
-                fallbackScanner.reset();
+                fallbackScanner.stop().catch(() => {});
                 fallbackScanner = null;
             }
             if (stream) {
@@ -68,6 +70,11 @@
             }
             if (video) {
                 video.srcObject = null;
+                video.classList.remove('hidden');
+            }
+            if (fallbackContainer) {
+                fallbackContainer.innerHTML = '';
+                fallbackContainer.classList.add('hidden');
             }
         };
 
@@ -96,30 +103,57 @@
             status.textContent = 'Starting camera...';
 
             try {
-                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                video.srcObject = stream;
-                await video.play();
                 if ('BarcodeDetector' in window) {
+                    if (video) {
+                        video.classList.remove('hidden');
+                    }
                     detector = new BarcodeDetector({
                         formats: ['qr_code', 'code_128', 'ean_13', 'ean_8', 'upc_a', 'upc_e']
                     });
+                    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                    video.srcObject = stream;
+                    await video.play();
                     status.textContent = 'Point the camera at the barcode.';
                     scanLoop();
                 } else {
                     status.textContent = 'Loading barcode scanner...';
+                    if (video) {
+                        video.classList.add('hidden');
+                    }
+                    if (fallbackContainer) {
+                        fallbackContainer.classList.remove('hidden');
+                        fallbackContainer.innerHTML = '';
+                    }
                     fallbackLoader = fallbackLoader
-                        ?? import('https://cdn.jsdelivr.net/npm/@@zxing/browser@0.1.4/esm/index.min.js');
-                    const zx = await fallbackLoader;
-                    fallbackScanner = new zx.BrowserMultiFormatReader();
+                        ?? new Promise((resolve, reject) => {
+                            const script = document.createElement('script');
+                            script.src = 'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
+                            script.async = true;
+                            script.onload = resolve;
+                            script.onerror = reject;
+                            document.head.appendChild(script);
+                        });
+                    await fallbackLoader;
+                    if (!fallbackContainer || !window.Html5Qrcode) {
+                        status.textContent = 'Barcode scanning is not available.';
+                        return;
+                    }
+                    const elementId = 'barcodeFallback';
+                    fallbackScanner = new window.Html5Qrcode(elementId);
                     status.textContent = 'Point the camera at the barcode.';
-                    fallbackScanner.decodeFromVideoElement(video, (result) => {
-                        if (result && input && form) {
-                            input.value = result.getText();
-                            stopStream();
-                            dialog.close();
-                            form.requestSubmit();
-                        }
-                    });
+                    await fallbackScanner.start(
+                        { facingMode: 'environment' },
+                        { fps: 10, qrbox: { width: 220, height: 220 } },
+                        (decodedText) => {
+                            if (input && form) {
+                                input.value = decodedText;
+                                stopStream();
+                                dialog.close();
+                                form.requestSubmit();
+                            }
+                        },
+                        () => {}
+                    );
                 }
             } catch (error) {
                 status.textContent = 'Unable to access the camera.';
