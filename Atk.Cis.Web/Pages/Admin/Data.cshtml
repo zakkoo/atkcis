@@ -22,7 +22,6 @@
     <table>
         <thead>
             <tr>
-                <th>Id</th>
                 <th>First name</th>
                 <th>Last name</th>
                 <th>Birthday</th>
@@ -33,10 +32,9 @@
         @foreach (var user in Model.Users)
         {
             <tr>
-                <td>@user.Id</td>
                 <td>@user.FirstName</td>
                 <td>@user.LastName</td>
-                <td>@user.Birthday</td>
+                <td>@user.Birthday?.ToString("dd.MM.yyyy")</td>
                 <td>@user.Code</td>
             </tr>
         }
@@ -50,22 +48,22 @@
     <table>
         <thead>
             <tr>
-                <th>Session Id</th>
-                <th>User Id</th>
-                <th>Opened</th>
-                <th>Closed</th>
+                <th>Attakkee</th>
+                <th>Opened at</th>
+                <th>Closed at</th>
                 <th>Closed by</th>
+                <th>Duration</th>
             </tr>
         </thead>
         <tbody>
         @foreach (var session in Model.UserSessions)
         {
             <tr>
-                <td>@session.SessionId</td>
-                <td>@session.UserId</td>
+                <td>@session.UserDisplayName</td>
                 <td>@session.OpenedAt</td>
                 <td>@session.ClosedAt</td>
                 <td>@session.ClosedBy</td>
+                <td>@session.Duration</td>
             </tr>
         }
         </tbody>

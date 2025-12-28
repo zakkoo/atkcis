@@ -1,5 +1,6 @@
 using Atk.Cis.Service.Enums;
 using Atk.Cis.Service.Data;
+using Atk.Cis.Service.Dtos;
 using Atk.Cis.Service.Interfaces;
 using Atk.Cis.Service.Models;
 using Barcoder.Code128;
@@ -17,9 +18,24 @@ public class CheckInDeskService : ICheckInDeskService
     {
         _dbContext = dbContext;
     }
-    public async Task<List<UserSession>> GetUserSessions()
+    public async Task<List<UserSessionDto>> GetUserSessions()
     {
-        return await _dbContext.UserSessions.ToListAsync();
+        var sessions = await _dbContext.UserSessions.ToListAsync();
+        var users = await _dbContext.Users.ToListAsync();
+        var result = new List<UserSessionDto>();
+        foreach (var session in sessions)
+        {
+            var user = users.SingleOrDefault(x => x.Id == session.UserId);
+            result.Add(new UserSessionDto
+            {
+                SessionId = session.SessionId,
+                UserDisplayName = $"{user?.FirstName} {user?.LastName}",
+                ClosedAt = session.ClosedAt,
+                OpenedAt = session.OpenedAt,
+                ClosedBy = session.ClosedBy.ToString(),
+            });
+        }
+        return result;
     }
     public async Task<List<User>> GetUsers()
     {

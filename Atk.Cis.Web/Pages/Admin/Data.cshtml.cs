@@ -1,4 +1,5 @@
 using Atk.Cis.Service.Interfaces;
+using Atk.Cis.Service.Dtos;
 using Atk.Cis.Service.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -23,7 +24,7 @@ public class DataModel : PageModel
 
     public List<User> Users { get; private set; } = new();
 
-    public List<UserSession> UserSessions { get; private set; } = new();
+    public List<UserSessionDto> UserSessions { get; private set; } = new();
 
     public async Task<IActionResult> OnPostAsync()
     {
