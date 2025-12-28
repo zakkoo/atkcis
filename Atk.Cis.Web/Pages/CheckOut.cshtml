@@ -9,9 +9,114 @@
 <form method="post" class="space-y-4">
     <div class="space-y-1">
         <label for="code" class="text-xs uppercase tracking-[0.2em] text-terminal-glow/70">Code</label>
-        <input id="code" name="Code" value="@Model.Code" class="w-full max-w-md rounded border border-terminal-glow/50 bg-black px-3 py-2 text-terminal-glow focus:border-terminal-glow focus:outline-none focus:ring-2 focus:ring-terminal-glow/40" />
+        <div class="flex flex-wrap items-center gap-2">
+            <input id="code" name="Code" value="@Model.Code" class="w-full max-w-md flex-1 rounded border border-terminal-glow/50 bg-black px-3 py-2 text-terminal-glow focus:border-terminal-glow focus:outline-none focus:ring-2 focus:ring-terminal-glow/40" />
+            <button type="button" data-barcode-scan class="inline-flex h-10 w-10 items-center justify-center rounded border border-terminal-glow/60 text-terminal-glow transition hover:border-terminal-glow hover:bg-terminal-glow/10" aria-label="Scan barcode">
+                <svg aria-hidden="true" viewBox="0 0 24 24" class="h-5 w-5 fill-none stroke-current stroke-[1.5]">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 7V6a2 2 0 0 1 2-2h2M18 7V6a2 2 0 0 0-2-2h-2M6 17v1a2 2 0 0 0 2 2h2M18 17v1a2 2 0 0 1-2 2h-2" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 12h10" />
+                </svg>
+            </button>
+        </div>
     </div>
     <button type="submit" class="inline-flex items-center justify-center rounded border border-terminal-glow px-4 py-2 text-terminal-glow transition hover:border-terminal-glow/80 hover:bg-terminal-glow/10">Check-out</button>
 </form>
 
 <p>@Model.StatusMessage</p>
+
+<dialog id="barcodeDialog" class="w-full max-w-lg rounded border border-terminal-glow/50 bg-black text-terminal-glow/80 backdrop:bg-black/80">
+    <form method="dialog" class="flex items-center justify-between border-b border-terminal-glow/30 px-4 py-2">
+        <p class="text-xs uppercase tracking-[0.2em] text-terminal-glow/70">Scan barcode</p>
+        <button class="rounded border border-terminal-glow/40 px-2 py-1 text-xs uppercase tracking-[0.2em] text-terminal-glow/70 transition hover:border-terminal-glow hover:text-terminal-glow">Close</button>
+    </form>
+    <div class="space-y-3 p-4">
+        <video class="aspect-video w-full rounded border border-terminal-glow/30 bg-black" playsinline></video>
+        <p id="barcodeStatus" class="text-xs text-terminal-glow/70">Allow camera access to scan the barcode.</p>
+    </div>
+</dialog>
+
+<script>
+    (() => {
+        const scanButton = document.querySelector('[data-barcode-scan]');
+        const dialog = document.getElementById('barcodeDialog');
+        const status = document.getElementById('barcodeStatus');
+        if (!scanButton || !dialog || !status) {
+            return;
+        }
+
+        const form = scanButton.closest('form');
+        const input = form?.querySelector('input[name="Code"]');
+        const video = dialog.querySelector('video');
+        let stream;
+        let detector;
+        let rafId;
+
+        const stopStream = () => {
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
+            if (stream) {
+                stream.getTracks().forEach((track) => track.stop());
+                stream = null;
+            }
+            if (video) {
+                video.srcObject = null;
+            }
+        };
+
+        const scanLoop = async () => {
+            if (!detector || !video) {
+                return;
+            }
+            if (video.readyState < 2) {
+                rafId = requestAnimationFrame(scanLoop);
+                return;
+            }
+
+            const barcodes = await detector.detect(video);
+            if (barcodes.length > 0 && input && form) {
+                input.value = barcodes[0].rawValue;
+                stopStream();
+                dialog.close();
+                form.requestSubmit();
+                return;
+            }
+
+            rafId = requestAnimationFrame(scanLoop);
+        };
+
+        const startScan = async () => {
+            status.textContent = 'Starting camera...';
+            if (!('BarcodeDetector' in window)) {
+                status.textContent = 'Barcode scanning is not supported on this device.';
+                return;
+            }
+
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = stream;
+                await video.play();
+                detector = new BarcodeDetector({
+                    formats: ['qr_code', 'code_128', 'ean_13', 'ean_8', 'upc_a', 'upc_e']
+                });
+                status.textContent = 'Point the camera at the barcode.';
+                scanLoop();
+            } catch (error) {
+                status.textContent = 'Unable to access the camera.';
+                stopStream();
+            }
+        };
+
+        scanButton.addEventListener('click', () => {
+            if (typeof dialog.showModal === 'function') {
+                dialog.showModal();
+            } else {
+                dialog.setAttribute('open', '');
+            }
+            startScan();
+        });
+
+        dialog.addEventListener('close', stopStream);
+    })();
+</script>
