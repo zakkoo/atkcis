@@ -88,7 +88,7 @@ public class CheckInDeskService : ICheckInDeskService
     public async Task<string> SignUp(string firstName, string lastName, DateTimeOffset birthday)
     {
         var user = GetUser(firstName, lastName, birthday);
-        if (user != null) return "That user already exists. Try signing in instead.";
+        if (user != null) return "That user already exists.";
 
         var code = GenerateCode(firstName, lastName);
 
