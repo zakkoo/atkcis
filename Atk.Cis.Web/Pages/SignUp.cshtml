@@ -6,19 +6,25 @@
 
 <h1>Sign up</h1>
 
-<form method="post">
-    <label for="firstName">First name</label>
-    <input id="firstName" name="FirstName" value="@Model.FirstName" />
+<form method="post" class="space-y-4">
+    <div class="space-y-1">
+        <label for="firstName" class="text-xs uppercase tracking-[0.2em] text-terminal-glow/70">First name</label>
+        <input id="firstName" name="FirstName" value="@Model.FirstName" class="w-full max-w-md rounded border border-terminal-glow/50 bg-black px-3 py-2 text-terminal-glow focus:border-terminal-glow focus:outline-none focus:ring-2 focus:ring-terminal-glow/40" />
+    </div>
 
-    <label for="lastName">Last name</label>
-    <input id="lastName" name="LastName" value="@Model.LastName" />
+    <div class="space-y-1">
+        <label for="lastName" class="text-xs uppercase tracking-[0.2em] text-terminal-glow/70">Last name</label>
+        <input id="lastName" name="LastName" value="@Model.LastName" class="w-full max-w-md rounded border border-terminal-glow/50 bg-black px-3 py-2 text-terminal-glow focus:border-terminal-glow focus:outline-none focus:ring-2 focus:ring-terminal-glow/40" />
+    </div>
 
-    <label for="birthday">Birthday</label>
-    <input id="birthday" name="Birthday" type="date" value="@Model.Birthday.ToString("yyyy-MM-dd")" />
+    <div class="space-y-1">
+        <label for="birthday" class="text-xs uppercase tracking-[0.2em] text-terminal-glow/70">Birthday</label>
+        <input id="birthday" name="Birthday" type="date" value="@Model.Birthday.ToString("yyyy-MM-dd")" class="w-full max-w-md rounded border border-terminal-glow/50 bg-black px-3 py-2 text-terminal-glow focus:border-terminal-glow focus:outline-none focus:ring-2 focus:ring-terminal-glow/40" />
+    </div>
 
-    <button type="submit">Create account</button>
+    <button type="submit" class="inline-flex items-center justify-center rounded border border-terminal-glow px-4 py-2 text-terminal-glow transition hover:border-terminal-glow/80 hover:bg-terminal-glow/10">Create account</button>
 </form>
 
-    <div>
-        @Html.Raw(Model.StatusMessage)
-    </div>
+<div class="mt-6 space-y-4 text-terminal-glow/80 [&>svg]:mx-auto [&>svg]:h-auto [&>svg]:w-full [&>svg]:max-w-xs [&>svg]:rounded [&>svg]:bg-white [&>svg]:p-4">
+    @Html.Raw(Model.StatusMessage)
+</div>
