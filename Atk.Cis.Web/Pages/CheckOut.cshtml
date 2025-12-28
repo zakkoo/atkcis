@@ -50,11 +50,17 @@
         let stream;
         let detector;
         let rafId;
+        let fallbackScanner;
+        let fallbackLoader;
 
         const stopStream = () => {
             if (rafId) {
                 cancelAnimationFrame(rafId);
                 rafId = null;
+            }
+            if (fallbackScanner) {
+                fallbackScanner.reset();
+                fallbackScanner = null;
             }
             if (stream) {
                 stream.getTracks().forEach((track) => track.stop());
@@ -88,20 +94,33 @@
 
         const startScan = async () => {
             status.textContent = 'Starting camera...';
-            if (!('BarcodeDetector' in window)) {
-                status.textContent = 'Barcode scanning is not supported on this device.';
-                return;
-            }
 
             try {
                 stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
                 video.srcObject = stream;
                 await video.play();
-                detector = new BarcodeDetector({
-                    formats: ['qr_code', 'code_128', 'ean_13', 'ean_8', 'upc_a', 'upc_e']
-                });
-                status.textContent = 'Point the camera at the barcode.';
-                scanLoop();
+                if ('BarcodeDetector' in window) {
+                    detector = new BarcodeDetector({
+                        formats: ['qr_code', 'code_128', 'ean_13', 'ean_8', 'upc_a', 'upc_e']
+                    });
+                    status.textContent = 'Point the camera at the barcode.';
+                    scanLoop();
+                } else {
+                    status.textContent = 'Loading barcode scanner...';
+                    fallbackLoader = fallbackLoader
+                        ?? import('https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.4/esm/index.min.js');
+                    const zx = await fallbackLoader;
+                    fallbackScanner = new zx.BrowserMultiFormatReader();
+                    status.textContent = 'Point the camera at the barcode.';
+                    fallbackScanner.decodeFromVideoElement(video, (result) => {
+                        if (result && input && form) {
+                            input.value = result.getText();
+                            stopStream();
+                            dialog.close();
+                            form.requestSubmit();
+                        }
+                    });
+                }
             } catch (error) {
                 status.textContent = 'Unable to access the camera.';
                 stopStream();
