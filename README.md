@@ -37,3 +37,11 @@ dotnet ef migrations add [description] -p Atk.Cis.Service -s Atk.Cis.Worker
 ```bash
 dotnet ef database update -p Atk.Cis.Service -s Atk.Cis.Worker
 ```
+
+### Build web assets
+
+```bash
+cd Atk.Cis.Web
+npm install
+npm run build
+```

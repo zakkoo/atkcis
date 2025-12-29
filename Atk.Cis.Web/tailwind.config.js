@@ -4,7 +4,6 @@ module.exports = {
     extend: {
       fontFamily: {
         terminal: [
-          '"Share Tech Mono"',
           "ui-monospace",
           "SFMono-Regular",
           "Menlo",
