@@ -36,8 +36,8 @@ public class DataModel : PageModel
             return Page();
         }
 
-        Users = await _checkInDeskService.GetUsers();
-        UserSessions = await _checkInDeskService.GetUserSessions();
+        Users = await _checkInDeskService.GetUsers(HttpContext.RequestAborted);
+        UserSessions = await _checkInDeskService.GetUserSessions(HttpContext.RequestAborted);
         StatusMessage = "Loaded admin data.";
         return Page();
     }

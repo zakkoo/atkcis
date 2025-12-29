@@ -35,7 +35,7 @@ public class GetBarcodeModel : PageModel
     public async Task OnPostAsync()
     {
         var birthday = new DateTimeOffset(DateTime.SpecifyKind(Birthday, DateTimeKind.Utc));
-        BarcodeSvg = await _checkInDeskService.GetBarcode(FirstName, LastName, birthday);
+        BarcodeSvg = await _checkInDeskService.GetBarcode(FirstName, LastName, birthday, HttpContext.RequestAborted);
 
         if (string.IsNullOrWhiteSpace(BarcodeSvg))
         {
