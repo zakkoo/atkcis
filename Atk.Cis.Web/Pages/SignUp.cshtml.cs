@@ -31,6 +31,6 @@ public class SignUpModel : PageModel
     public async Task OnPostAsync()
     {
         var birthday = new DateTimeOffset(DateTime.SpecifyKind(Birthday, DateTimeKind.Utc));
-        StatusMessage = await _checkInDeskService.SignUp(FirstName, LastName, birthday);
+        StatusMessage = await _checkInDeskService.SignUp(FirstName, LastName, birthday, HttpContext.RequestAborted);
     }
 }

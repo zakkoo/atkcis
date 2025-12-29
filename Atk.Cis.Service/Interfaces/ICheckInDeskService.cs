@@ -4,11 +4,11 @@ namespace Atk.Cis.Service.Interfaces;
 
 public interface ICheckInDeskService
 {
-    Task<string> SignUp(string firstName, string lastName, DateTimeOffset birthday);
-    Task<string> CheckIn(string code);
-    Task<string> CheckOut(string code);
-    Task<string> CleanupStaleSessions(TimeSpan maxDuration);
-    Task<string> GetBarcode(string firstName, string lastName, DateTimeOffset birthday);
-    Task<List<User>> GetUsers();
-    Task<List<UserSessionDto>> GetUserSessions();
+    Task<string> SignUp(string firstName, string lastName, DateTimeOffset birthday, CancellationToken cancellationToken = default);
+    Task<string> CheckIn(string code, CancellationToken cancellationToken = default);
+    Task<string> CheckOut(string code, CancellationToken cancellationToken = default);
+    Task<string> CleanupStaleSessions(TimeSpan maxDuration, CancellationToken cancellationToken = default);
+    Task<string> GetBarcode(string firstName, string lastName, DateTimeOffset birthday, CancellationToken cancellationToken = default);
+    Task<List<User>> GetUsers(CancellationToken cancellationToken = default);
+    Task<List<UserSessionDto>> GetUserSessions(CancellationToken cancellationToken = default);
 }

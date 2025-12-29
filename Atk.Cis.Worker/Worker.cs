@@ -30,7 +30,7 @@ public class Worker : BackgroundService
                 var maxDurationMinutes = _config.GetValue<int>("SessionCleanup:MaxDurationMinutes");
                 using var scope = _scopeFactory.CreateScope();
                 _desk = scope.ServiceProvider.GetRequiredService<ICheckInDeskService>();
-                var result = await _desk.CleanupStaleSessions(TimeSpan.FromMinutes(maxDurationMinutes));
+                var result = await _desk.CleanupStaleSessions(TimeSpan.FromMinutes(maxDurationMinutes), stoppingToken);
                 _logger.LogInformation(result);
             }
 
@@ -48,7 +48,7 @@ public class Worker : BackgroundService
             {
                 using var scope = _scopeFactory.CreateScope();
                 _desk = scope.ServiceProvider.GetRequiredService<ICheckInDeskService>();
-                var result = await _desk.CheckIn(input);
+                var result = await _desk.CheckIn(input, stoppingToken);
                 _logger.LogInformation(result);
             }
 
@@ -80,7 +80,7 @@ public class Worker : BackgroundService
                 {
                     using var scope = _scopeFactory.CreateScope();
                     _desk = scope.ServiceProvider.GetRequiredService<ICheckInDeskService>();
-                    var result = await _desk.SignUp("Zakaria", "Agoulif", DateTimeOffset.Now);
+                    var result = await _desk.SignUp("Zakaria", "Agoulif", DateTimeOffset.Now, token);
                     _logger.LogInformation(result);
                 }
                 break;
