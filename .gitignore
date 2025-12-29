@@ -61,3 +61,7 @@ nunit-*.xml
 *.db
 publish/
 .vscode/
+
+# Node/npm
+node_modules/
+npm-debug.log*
