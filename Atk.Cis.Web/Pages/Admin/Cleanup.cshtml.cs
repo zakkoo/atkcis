@@ -32,7 +32,9 @@ public class CleanupModel : PageModel
             return Page();
         }
 
-        StatusMessage = await _checkInDeskService.CleanupStaleSessions(TimeSpan.FromMinutes(MaxDurationMinutes));
+        StatusMessage = await _checkInDeskService.CleanupStaleSessions(
+            TimeSpan.FromMinutes(MaxDurationMinutes),
+            HttpContext.RequestAborted);
         return Page();
     }
 }

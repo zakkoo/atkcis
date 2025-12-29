@@ -14,44 +14,46 @@ namespace Atk.Cis.Service;
 public class CheckInDeskService : ICheckInDeskService
 {
 
-    private AppDbContext _dbContext;
+    private readonly AppDbContext _dbContext;
 
     public CheckInDeskService(AppDbContext dbContext)
     {
         _dbContext = dbContext;
     }
-    public async Task<List<UserSessionDto>> GetUserSessions()
+    public async Task<List<UserSessionDto>> GetUserSessions(CancellationToken cancellationToken = default)
     {
-        var sessions = await _dbContext.UserSessions.ToListAsync();
-        var users = await _dbContext.Users.ToListAsync();
-        var result = new List<UserSessionDto>();
-        foreach (var session in sessions)
+        var sessions = await (from session in _dbContext.UserSessions.AsNoTracking()
+                              join user in _dbContext.Users.AsNoTracking() on session.UserId equals user.Id into userGroup
+                              from user in userGroup.DefaultIfEmpty()
+                              select new
+                              {
+                                  session.SessionId,
+                                  UserFirstName = user == null ? null : user.FirstName,
+                                  UserLastName = user == null ? null : user.LastName,
+                                  session.ClosedAt,
+                                  session.OpenedAt,
+                                  session.ClosedBy,
+                              }).ToListAsync(cancellationToken);
+        return sessions.Select(item => new UserSessionDto
         {
-            var user = users.SingleOrDefault(x => x.Id == session.UserId);
-            result.Add(new UserSessionDto
-            {
-                SessionId = session.SessionId,
-                UserDisplayName = $"{user?.FirstName} {user?.LastName}",
-                ClosedAt = session.ClosedAt,
-                OpenedAt = session.OpenedAt,
-                ClosedBy = session.ClosedBy.ToString(),
-            });
-        }
-        return result;
+            SessionId = item.SessionId,
+            UserDisplayName = $"{item.UserFirstName} {item.UserLastName}",
+            ClosedAt = item.ClosedAt,
+            OpenedAt = item.OpenedAt,
+            ClosedBy = item.ClosedBy.ToString(),
+        }).ToList();
     }
-    public async Task<List<User>> GetUsers()
+    public async Task<List<User>> GetUsers(CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Users.ToListAsync();
+        return await _dbContext.Users.AsNoTracking().ToListAsync(cancellationToken);
     }
-    public async Task<string> CleanupStaleSessions(TimeSpan maxDuration)
+    public async Task<string> CleanupStaleSessions(TimeSpan maxDuration, CancellationToken cancellationToken = default)
     {
-        var cutoff = DateTimeOffset.UtcNow - maxDuration;
+        var cutoff = DateTimeOffset.Now - maxDuration;
 
-        var sessionsToClose = (await _dbContext.UserSessions
-                        .Where(session => session.ClosedAt == null)
-                        .ToListAsync())
-                    .Where(session => session.OpenedAt <= cutoff)
-                    .ToList();
+        var sessionsToClose = await _dbContext.UserSessions
+            .Where(session => session.ClosedAt == null && session.OpenedAt <= cutoff)
+            .ToListAsync(cancellationToken);
         if (sessionsToClose.Count == 0)
         {
             return "No stale sessions found.";
@@ -59,18 +61,18 @@ public class CheckInDeskService : ICheckInDeskService
 
         foreach (var session in sessionsToClose)
         {
-            session.ClosedAt = DateTimeOffset.UtcNow;
+            session.ClosedAt = DateTimeOffset.Now;
             session.ClosedBy = ClosedByType.Worker;
         }
 
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
         return $"Cleaned up {sessionsToClose.Count} stale sessions.";
     }
 
-    public async Task<string> GetBarcode(string firstName, string lastName, DateTimeOffset birthday)
+    public async Task<string> GetBarcode(string firstName, string lastName, DateTimeOffset birthday, CancellationToken cancellationToken = default)
     {
-        var user = GetUser(firstName, lastName, birthday);
+        var user = await GetUser(firstName, lastName, birthday, cancellationToken);
         if (user == null) return "We couldn't find a match for those details. Please check and try again.";
         var barcode = Code128Encoder.Encode(user.Code);
         var renderer = new SvgRenderer();
@@ -85,12 +87,12 @@ public class CheckInDeskService : ICheckInDeskService
         }
     }
 
-    public async Task<string> SignUp(string firstName, string lastName, DateTimeOffset birthday)
+    public async Task<string> SignUp(string firstName, string lastName, DateTimeOffset birthday, CancellationToken cancellationToken = default)
     {
-        var user = GetUser(firstName, lastName, birthday);
+        var user = await GetUser(firstName, lastName, birthday, cancellationToken);
         if (user != null) return "That user already exists.";
 
-        var code = GenerateCode(firstName, lastName);
+        var code = await GenerateCode(firstName, lastName, cancellationToken);
 
         if (code == null) return "We couldn't complete the sign-up. Please review the details and try again.";
         user = new User
@@ -102,20 +104,22 @@ public class CheckInDeskService : ICheckInDeskService
             Code = code,
         };
         _dbContext.Users.Add(user);
-        await _dbContext.SaveChangesAsync();
-        return await GetBarcode(user.FirstName, user.LastName, user.Birthday.GetValueOrDefault());
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        return await GetBarcode(user.FirstName, user.LastName, user.Birthday.GetValueOrDefault(), cancellationToken);
     }
 
-    public async Task<string> CheckIn(string code)
+    public async Task<string> CheckIn(string code, CancellationToken cancellationToken = default)
     {
         var errorMessage = "That barcode isn't valid. Check-in was not completed.";
         if (string.IsNullOrEmpty(code)) return errorMessage;
 
-        var user = _dbContext.Users.SingleOrDefault(x => x.Code == code.ToLowerInvariant());
+        var user = await _dbContext.Users
+            .SingleOrDefaultAsync(x => x.Code == code.ToLowerInvariant(), cancellationToken);
 
         if (user == null) return errorMessage;
 
-        var checkInSession = _dbContext.UserSessions.FirstOrDefault(x => x.UserId == user.Id && x.ClosedAt == null);
+        var checkInSession = await _dbContext.UserSessions
+            .FirstOrDefaultAsync(x => x.UserId == user.Id && x.ClosedAt == null, cancellationToken);
         if (checkInSession == null)
         {
             checkInSession = new UserSession
@@ -125,45 +129,54 @@ public class CheckInDeskService : ICheckInDeskService
                 OpenedAt = DateTimeOffset.Now,
             };
             _dbContext.UserSessions.Add(checkInSession);
-            _ = _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync(cancellationToken);
             return $"Check-in complete for {user.FirstName} {user.LastName}.";
         }
-        return await CheckOut(code);
+        return await CheckOut(code, cancellationToken);
     }
 
-    public async Task<string> CheckOut(string code)
+    public async Task<string> CheckOut(string code, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrEmpty(code)) return "We couldn't check out with that input. Please try again.";
-        var user = _dbContext.Users.SingleOrDefault(x => x.Code == code.ToLowerInvariant());
+        var user = await _dbContext.Users
+            .SingleOrDefaultAsync(x => x.Code == code.ToLowerInvariant(), cancellationToken);
         if (user == null) return "That barcode isn't valid. Check-out was not completed.";
-        var checkInSession = _dbContext.UserSessions.FirstOrDefault(x => x.UserId == user.Id && x.ClosedAt == null);
+        var checkInSession = await _dbContext.UserSessions
+            .FirstOrDefaultAsync(x => x.UserId == user.Id && x.ClosedAt == null, cancellationToken);
         if (checkInSession == null) return $"No open session for {user.FirstName} {user.LastName}. Check-out was not completed.";
         checkInSession.ClosedAt = DateTimeOffset.Now;
         checkInSession.ClosedBy = ClosedByType.User;
-        _ = _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync(cancellationToken);
         return $"Check-out complete for {user.FirstName} {user.LastName}.";
     }
 
-    private User? GetUser(string firstName, string lastName, DateTimeOffset birthday)
+    private Task<User?> GetUser(string firstName, string lastName, DateTimeOffset birthday, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName)) return null;
-        return _dbContext.Users.FirstOrDefault(x => x.FirstName != null && x.FirstName.ToLower() == firstName.ToLower() &&
-                x.LastName != null && lastName.ToLower() == x.LastName.ToLower() &&
-                x.Birthday == birthday);
+        if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName))
+        {
+            return Task.FromResult<User?>(null);
+        }
+        var normalizedFirstName = firstName.ToLowerInvariant();
+        var normalizedLastName = lastName.ToLowerInvariant();
+        return _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(
+            x => x.FirstName != null && x.FirstName.ToLower() == normalizedFirstName &&
+                x.LastName != null && x.LastName.ToLower() == normalizedLastName &&
+                x.Birthday == birthday,
+            cancellationToken);
     }
 
-    private string? GenerateCode(string firstName, string lastName)
+    private async Task<string?> GenerateCode(string firstName, string lastName, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(firstName) || string.IsNullOrEmpty(lastName)) return null;
         var prefix = NormalizeString((lastName[..2] + firstName[0]).ToLowerInvariant());
 
-        if (!_dbContext.Users.Any(x => x.Code == prefix))
+        if (!await _dbContext.Users.AnyAsync(x => x.Code == prefix, cancellationToken))
             return prefix;
 
         var counter = 1;
         var candidate = prefix + counter;
 
-        while (_dbContext.Users.Any(x => x.Code == candidate))
+        while (await _dbContext.Users.AnyAsync(x => x.Code == candidate, cancellationToken))
         {
             counter++;
             candidate = prefix + counter;
