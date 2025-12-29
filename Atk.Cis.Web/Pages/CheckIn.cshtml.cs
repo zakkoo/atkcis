@@ -24,6 +24,6 @@ public class CheckInModel : PageModel
 
     public async Task OnPostAsync()
     {
-        StatusMessage = await _checkInDeskService.CheckIn(Code);
+        StatusMessage = await _checkInDeskService.CheckIn(Code, HttpContext.RequestAborted);
     }
 }
