@@ -28,7 +28,7 @@ public class CheckInDeskService : ICheckInDeskService
                       select new UserSessionDto
                       {
                           SessionId = session.SessionId,
-                          UserDisplayName = $"{user?.FirstName} {user?.LastName}",
+                          UserDisplayName = $"{user.FirstName} {user.LastName}",
                           ClosedAt = session.ClosedAt,
                           OpenedAt = session.OpenedAt,
                           ClosedBy = session.ClosedBy.ToString(),
