@@ -104,6 +104,114 @@ public class CheckInDeskServiceTests
         Assert.Equal("Cleaned up 1 stale sessions.", result);
     }
 
+    [Fact]
+    public async Task GetUsers_ReturnsAllUsers()
+    {
+        await using var context = CreateContext();
+        context.Users.AddRange(
+            new User
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Margaret",
+                LastName = "Hamilton",
+                Birthday = new DateTimeOffset(1936, 8, 17, 0, 0, 0, TimeSpan.Zero),
+                Code = "ham",
+            },
+            new User
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Donald",
+                LastName = "Knuth",
+                Birthday = new DateTimeOffset(1938, 1, 10, 0, 0, 0, TimeSpan.Zero),
+                Code = "knd",
+            });
+        await context.SaveChangesAsync();
+
+        var service = new CheckInDeskService(context);
+
+        var users = await service.GetUsers();
+
+        Assert.Equal(2, users.Count);
+        Assert.Contains(users, user => user.Code == "ham");
+        Assert.Contains(users, user => user.Code == "knd");
+    }
+
+    [Fact]
+    public async Task GetUserSessions_ReturnsSessionsWithDisplayNameAndClosedBy()
+    {
+        var userId = Guid.NewGuid();
+        var openedAt = DateTimeOffset.UtcNow.AddMinutes(-10);
+        var closedAt = DateTimeOffset.UtcNow.AddMinutes(-2);
+        await using var context = CreateContext();
+        context.Users.Add(new User
+        {
+            Id = userId,
+            FirstName = "Radia",
+            LastName = "Perlman",
+            Birthday = new DateTimeOffset(1951, 12, 18, 0, 0, 0, TimeSpan.Zero),
+            Code = "per",
+        });
+        context.UserSessions.Add(new UserSession
+        {
+            SessionId = Guid.NewGuid(),
+            UserId = userId,
+            OpenedAt = openedAt,
+            ClosedAt = closedAt,
+            ClosedBy = ClosedByType.Worker,
+        });
+        await context.SaveChangesAsync();
+
+        var service = new CheckInDeskService(context);
+
+        var sessions = await service.GetUserSessions();
+
+        var session = Assert.Single(sessions);
+        Assert.Equal(openedAt, session.OpenedAt);
+        Assert.Equal(closedAt, session.ClosedAt);
+        Assert.Equal("Radia Perlman", session.UserDisplayName);
+        Assert.Equal(ClosedByType.Worker.ToString(), session.ClosedBy);
+    }
+
+    [Fact]
+    public async Task SignUp_CreatesUserAndReturnsBarcodeSvg()
+    {
+        await using var context = CreateContext();
+        context.Users.Add(new User
+        {
+            Id = Guid.NewGuid(),
+            FirstName = "Ada",
+            LastName = "Lovelace",
+            Birthday = new DateTimeOffset(1815, 12, 10, 0, 0, 0, TimeSpan.Zero),
+            Code = "loa",
+        });
+        await context.SaveChangesAsync();
+
+        var service = new CheckInDeskService(context);
+
+        var result = await service.SignUp(
+            "Alan",
+            "Lovelace",
+            new DateTimeOffset(1912, 6, 23, 0, 0, 0, TimeSpan.Zero));
+
+        var createdUser = await context.Users.SingleAsync(user => user.FirstName == "Alan");
+        Assert.Equal("loa1", createdUser.Code);
+        Assert.Contains("<svg", result, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task GetBarcode_ReturnsFriendlyMessage_WhenUserMissing()
+    {
+        await using var context = CreateContext();
+        var service = new CheckInDeskService(context);
+
+        var result = await service.GetBarcode(
+            "Unknown",
+            "User",
+            new DateTimeOffset(1990, 1, 1, 0, 0, 0, TimeSpan.Zero));
+
+        Assert.Equal("We couldn't find a match for those details. Please check and try again.", result);
+    }
+
     private static AppDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<AppDbContext>()
