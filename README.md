@@ -12,25 +12,30 @@ To get startet you need following installed on your machine
 
 1. Download source code
 2. Open terminal and cd to the projects root
-3. 
+3. Build the solution 
 ```bash
 dotnet restore
 dotnet build
 ```
-4.
+4. Build web app
 ```bash
 cd Atk.Cis.Web
 npm install
 npm run build
 ```
+5. Create the database (SQLite)
+
+```bash
+dotnet ef database update -p Atk.Cis.Service -s Atk.Cis.Worker
+```
+
+## Model changes
+For model changes that affects the database don't forget to add the migration script by
 
 ```bash
 dotnet ef migrations add [description] -p Atk.Cis.Service -s Atk.Cis.Worker
 ```
 
-```bash
-dotnet ef database update -p Atk.Cis.Service -s Atk.Cis.Worker
-```
 
 ### Build web assets
 
