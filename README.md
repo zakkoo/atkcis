@@ -1,18 +1,18 @@
 # ATK Check-in System
 
-This is a very simple check-in system.
+ATK CIS is a lightweight check-in system.
 
-With the web app you can sign up, check-in, check-out and do many more things. You can also attach a barcode scanner to the system and let the worker deamon do the heavy lifting of checking the users in and out.
+The web app supports sign-up, check-in, check-out, and more. You can also connect a barcode scanner and let the worker daemon handle scanning and check-in/check-out flows.
 
 ## Development
 
-To get startet you need following installed on your machine
-- .net 10
-- node 25.2.1
+To get started, install the following:
+- .NET 10
+- Node.js 25.2.1
 
-1. Download source code
-2. Open terminal and cd to the projects root
-3. Build the solution 
+1. Download the source code
+2. Open a terminal and `cd` to the project root
+3. Build the solution
 ```bash
 dotnet restore
 dotnet build
@@ -29,15 +29,15 @@ npm run build
 dotnet ef database update -p Atk.Cis.Service -s Atk.Cis.Worker
 ```
 
-### Changes in model
-For model changes that affects the database don't forget to add the migration script by
+### Model changes
+If a model change affects the database, add a migration:
 
 ```bash
 dotnet ef migrations add [description] -p Atk.Cis.Service -s Atk.Cis.Worker
 ```
 
-### Changes in web assets
-You need to build the web assets manually and check them in (for example app.min.css). Currently this process is not automated.
+### Web asset changes
+Build the web assets manually and commit them (for example `app.min.css`). This process is not automated yet.
 
 ```bash
 cd Atk.Cis.Web
@@ -45,8 +45,8 @@ npm run build
 ```
 ## Provisioning
 1. Install Ubuntu Desktop
-2. Get the database file (if you don't know how, see See [Development](#Development))
-3. Move the database file to Downloads and execute
+2. Get the database file (see [Development](#development) if needed)
+3. Move the database file to `~/Downloads` and run:
 
 
 ```bash
@@ -60,12 +60,12 @@ sudo mkdir -p /opt/atkcis/web
 sudo mkdir -p /opt/atkcis/worker
 ```
 
-6. Create deamon file...
+5. Create the worker daemon file:
 
 ```bash
 sudo nvim /etc/systemd/system/atkcis-worker.service
 ```
-7. ... and paste following into atkcis-worker.service file
+6. Paste the following into `atkcis-worker.service`:
 
 ```bash
 [Unit]
@@ -82,13 +82,13 @@ User=root
 WantedBy=multi-user.target
 ```
 
-8. Create deamon file...
+7. Create the web daemon file:
 
 ```bash
 sudo nvim /etc/systemd/system/atkcis-web.service
 ```
 
-9. ... and paste following into atkcis-web.service file
+8. Paste the following into `atkcis-web.service`:
 
 ```bash
 [Unit]
@@ -107,10 +107,10 @@ WantedBy=multi-user.target
 
 ## Deployment
 
-This projects CI/CD pipeline is set up like following
+This project's CI/CD pipeline works as follows:
 
-1. Your PR is merged into master branch
-2. Create a new release (tag) on github and the build pipeline will triggered 
+1. Your PR is merged into the `master` branch
+2. Create a new release (tag) on GitHub, which triggers the build pipeline
 3. Download artifacts
 4. Install
 
@@ -124,7 +124,7 @@ sudo cp -r ~/Downloads/atkcis/web-linux-arm64/* /opt/atkcis/web/
 sudo chown -R $USER:$USER /opt/atkcis
 ```
 
-5. Restart deamon 
+5. Restart daemons
 
 ```bash
 sudo systemctl daemon-reload
@@ -134,7 +134,7 @@ sudo systemctl enable atkcis-web.service
 sudo systemctl start atkcis-web.service
 ```
 
-6. Double check if services are running
+6. Confirm services are running
 
 ```bash
 sudo systemctl status atkcis-worker
@@ -143,24 +143,23 @@ sudo systemctl status atkcis-web
 
 ### Publish manually
 
-Publish for your current environment 
+Publish for your current environment:
 
 ```bash
 dotnet publish Atk.Cis.Worker/Atk.Cis.Worker.csproj -c Release -o ./publish/worker
 dotnet publish Atk.Cis.Web/Atk.Cis.Web.csproj -c Release -o ./publish/web
 ```
 
-Publish for linux (x64)
+Publish for Linux (x64):
 
 ```bash
 dotnet publish Atk.Cis.Worker/Atk.Cis.Worker.csproj -c Release -o ./publish/worker-linux -r linux-x64 --self-contained true
 dotnet publish Atk.Cis.Web/Atk.Cis.Web.csproj -c Release -o ./publish/web-linux -r linux-x64 --self-contained true
 ```
 
-Publish for linux (arm64)
+Publish for Linux (arm64):
 
 ```bash
 dotnet publish Atk.Cis.Worker/Atk.Cis.Worker.csproj -c Release -o ./publish/worker-linux -r linux-arm64 --self-contained true
 dotnet publish Atk.Cis.Web/Atk.Cis.Web.csproj -c Release -o ./publish/web-linux -r linux-arm64 --self-contained true
 ```
-
