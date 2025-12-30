@@ -105,23 +105,6 @@ User=root
 WantedBy=multi-user.target
 ```
 
-10. Restart deamon 
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable atkcis-worker.service
-sudo systemctl start atkcis-worker.service
-sudo systemctl enable atkcis-web.service
-sudo systemctl start atkcis-web.service
-```
-
-11. Double check if services are running
-
-```bash
-sudo systemctl status atkcis-worker
-sudo systemctl status atkcis-web
-```
-
 ## Deployment
 
 This projects CI/CD pipeline is set up like following
@@ -132,10 +115,6 @@ This projects CI/CD pipeline is set up like following
 4. Install
 
 ```bash
-
-```
-
-```bash
 unzip ~/Downloads/v0.3.6_atk-cis-linux-arm64.zip -d ~/Downloads/atkcis
 ```
 
@@ -143,6 +122,23 @@ unzip ~/Downloads/v0.3.6_atk-cis-linux-arm64.zip -d ~/Downloads/atkcis
 sudo cp -r ~/Downloads/atkcis/worker-linux-arm64/* /opt/atkcis/worker/
 sudo cp -r ~/Downloads/atkcis/web-linux-arm64/* /opt/atkcis/web/
 sudo chown -R $USER:$USER /opt/atkcis
+```
+
+5. Restart deamon 
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable atkcis-worker.service
+sudo systemctl start atkcis-worker.service
+sudo systemctl enable atkcis-web.service
+sudo systemctl start atkcis-web.service
+```
+
+6. Double check if services are running
+
+```bash
+sudo systemctl status atkcis-worker
+sudo systemctl status atkcis-web
 ```
 
 ### Publish manually
