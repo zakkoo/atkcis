@@ -44,8 +44,56 @@ cd Atk.Cis.Web
 npm run build
 ```
 ## Provisioning
-[TODO]
-- Ubuntu Desktop
+- Install Ubuntu Desktop
+- Install Chromium from App Center
+
+```bash
+cp ~/Downloads/atkcis.db ~/atkcis.db
+```
+
+```bash
+sudo mkdir -p /opt/atkcis/web
+sudo mkdir -p /opt/atkcis/worker
+```
+
+```bash
+sudo nvim /etc/systemd/system/atkcis-worker.service
+```
+paste following into atkcis-worker.service
+
+```
+[Unit]
+Description=ATKCIS Worker
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/atkcis/worker
+ExecStart=/opt/atkcis/worker/Atk.Cis.Worker
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo nvim /etc/systemd/system/atkcis-web.service
+```
+
+```
+[Unit]
+Description=ATKCIS Web
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/atkcis/web
+ExecStart=/opt/atkcis/web/Atk.Cis.Web
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+```
 
 ## Deployment
 
@@ -55,6 +103,20 @@ This projects CI/CD pipeline is set up like following
 2. Create a new release (tag) on github and the build pipeline will triggered 
 3. Download artifacts
 4. Install
+
+```bash
+
+```
+
+```bash
+unzip ~/Downloads/v0.3.6_atk-cis-linux-arm64.zip -d ~/Downloads/atkcis
+```
+
+```bash
+sudo cp -r ~/Downloads/atkcis/worker-linux-arm64/* /opt/atkcis/worker/
+sudo cp -r ~/Downloads/atkcis/web-linux-arm64/* /opt/atkcis/web/
+sudo chown -R $USER:$USER /opt/atkcis
+```
 
 ### Publish manually
 
