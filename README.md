@@ -4,6 +4,13 @@ ATK CIS is a lightweight check-in system.
 
 The web app supports sign-up, check-in, check-out, and more. You can also connect a barcode scanner and let the worker daemon handle scanning and check-in/check-out flows.
 
+- [Development](#development)
+  - [Model changes](#model-changes)
+  - [Web asset changes](#web-asset-changes)
+- [Provisioning](#provisioning)
+- [Deployment](#deployment)
+  - [Publish manually](#publish-manually)
+
 ## Development
 
 To get started, install the following:
