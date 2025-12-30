@@ -44,8 +44,66 @@ cd Atk.Cis.Web
 npm run build
 ```
 ## Provisioning
-[TODO]
-- Ubuntu Desktop
+1. Install Ubuntu Desktop
+2. Get the database file (if you don't know how, see See [Development](#Development))
+3. Move the database file to Downloads and execute
+
+
+```bash
+cp ~/Downloads/atkcis.db ~/atkcis.db
+```
+
+4. Create application folders
+
+```bash
+sudo mkdir -p /opt/atkcis/web
+sudo mkdir -p /opt/atkcis/worker
+```
+
+6. Create deamon file...
+
+```bash
+sudo nvim /etc/systemd/system/atkcis-worker.service
+```
+7. ... and paste following into atkcis-worker.service file
+
+```bash
+[Unit]
+Description=ATKCIS Worker
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/atkcis/worker
+ExecStart=/opt/atkcis/worker/Atk.Cis.Worker
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+```
+
+8. Create deamon file...
+
+```bash
+sudo nvim /etc/systemd/system/atkcis-web.service
+```
+
+9. ... and paste following into atkcis-web.service file
+
+```bash
+[Unit]
+Description=ATKCIS Web
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/atkcis/web
+ExecStart=/opt/atkcis/web/Atk.Cis.Web
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+```
 
 ## Deployment
 
@@ -55,6 +113,33 @@ This projects CI/CD pipeline is set up like following
 2. Create a new release (tag) on github and the build pipeline will triggered 
 3. Download artifacts
 4. Install
+
+```bash
+unzip ~/Downloads/v0.3.6_atk-cis-linux-arm64.zip -d ~/Downloads/atkcis
+```
+
+```bash
+sudo cp -r ~/Downloads/atkcis/worker-linux-arm64/* /opt/atkcis/worker/
+sudo cp -r ~/Downloads/atkcis/web-linux-arm64/* /opt/atkcis/web/
+sudo chown -R $USER:$USER /opt/atkcis
+```
+
+5. Restart deamon 
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable atkcis-worker.service
+sudo systemctl start atkcis-worker.service
+sudo systemctl enable atkcis-web.service
+sudo systemctl start atkcis-web.service
+```
+
+6. Double check if services are running
+
+```bash
+sudo systemctl status atkcis-worker
+sudo systemctl status atkcis-web
+```
 
 ### Publish manually
 

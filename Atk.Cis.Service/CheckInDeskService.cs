@@ -42,9 +42,12 @@ public class CheckInDeskService : ICheckInDeskService
     {
         var cutoff = DateTimeOffset.Now - maxDuration;
 
-        var sessionsToClose = await _dbContext.UserSessions
-            .Where(session => session.ClosedAt == null && session.OpenedAt <= cutoff)
-            .ToListAsync(cancellationToken);
+        var sessionsToClose = (await _dbContext.UserSessions
+                                .Where(session => session.ClosedAt == null)
+                                .ToListAsync(cancellationToken))
+                                .Where(session => session.OpenedAt <= cutoff)
+                                .ToList();
+
         if (sessionsToClose.Count == 0)
         {
             return "No stale sessions found.";
