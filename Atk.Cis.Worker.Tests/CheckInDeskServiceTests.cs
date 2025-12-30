@@ -30,7 +30,7 @@ public class CheckInDeskServiceTests
         var session = await context.UserSessions.SingleAsync();
         Assert.Equal(userId, session.UserId);
         Assert.Null(session.ClosedAt);
-        Assert.Equal("Ada Lovelace checked in.", result);
+        Assert.Equal("Check-in complete for Ada Lovelace.", result);
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class CheckInDeskServiceTests
         var session = await context.UserSessions.SingleAsync();
         Assert.NotNull(session.ClosedAt);
         Assert.Equal(ClosedByType.User, session.ClosedBy);
-        Assert.Equal("Grace Hopper checked out.", result);
+        Assert.Equal("Check-out complete for Grace Hopper.", result);
     }
 
     [Fact]
