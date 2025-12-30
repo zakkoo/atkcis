@@ -44,24 +44,30 @@ cd Atk.Cis.Web
 npm run build
 ```
 ## Provisioning
-- Install Ubuntu Desktop
-- Install Chromium from App Center
+1. Install Ubuntu Desktop
+2. Get the database file (if you don't know how, see See [Development](#Development))
+3. Move the database file to Downloads and execute
+
 
 ```bash
 cp ~/Downloads/atkcis.db ~/atkcis.db
 ```
+
+4. Create application folders
 
 ```bash
 sudo mkdir -p /opt/atkcis/web
 sudo mkdir -p /opt/atkcis/worker
 ```
 
+6. Create deamon file...
+
 ```bash
 sudo nvim /etc/systemd/system/atkcis-worker.service
 ```
-paste following into atkcis-worker.service
+7. ... and paste following into atkcis-worker.service file
 
-```
+```bash
 [Unit]
 Description=ATKCIS Worker
 After=network.target
@@ -76,11 +82,15 @@ User=root
 WantedBy=multi-user.target
 ```
 
+8. Create deamon file...
+
 ```bash
 sudo nvim /etc/systemd/system/atkcis-web.service
 ```
 
-```
+9. ... and paste following into atkcis-web.service file
+
+```bash
 [Unit]
 Description=ATKCIS Web
 After=network.target
@@ -93,6 +103,23 @@ User=root
 
 [Install]
 WantedBy=multi-user.target
+```
+
+10. Restart deamon 
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable atkcis-worker.service
+sudo systemctl start atkcis-worker.service
+sudo systemctl enable atkcis-web.service
+sudo systemctl start atkcis-web.service
+```
+
+11. Double check if services are running
+
+```bash
+sudo systemctl status atkcis-worker
+sudo systemctl status atkcis-web
 ```
 
 ## Deployment
