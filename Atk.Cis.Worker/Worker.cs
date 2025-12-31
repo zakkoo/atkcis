@@ -1,5 +1,6 @@
 using Atk.Cis.Service.Interfaces;
 using NetCoreAudio.Interfaces;
+using Atk.Cis.Service.Enums;
 
 namespace Atk.Cis.Worker;
 
@@ -67,40 +68,40 @@ public class Worker : BackgroundService
                     if (await isCheckedIn)
                     {
                         result = await _desk.CheckOut(input, stoppingToken);
-                        PlaySound(1);
+                        PlaySound(AudioType.CheckedIn);
                     }
                     else
                     {
                         result = await _desk.CheckIn(input, stoppingToken);
-                        PlaySound(2);
+                        PlaySound(AudioType.CheckedOut);
                     }
                     _logger.LogInformation(result);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex.Message);
-                    PlaySound(3);
+                    PlaySound(AudioType.Failed);
                 }
             }
             await Task.Delay(500, stoppingToken);
         }
     }
 
-    private void PlaySound(int type)
+    private void PlaySound(AudioType type)
     {
         try
         {
             if (_isAudioOn)
             {
-                if (type == 1)
+                if (type == AudioType.CheckedOut)
                 {
                     _player.Play(_checkedOutAudioPath);
                 }
-                else if (type == 2)
+                else if (type == AudioType.CheckedIn)
                 {
                     _player.Play(_checkedInAudioPath);
                 }
-                else if (type == 3)
+                else if (type == AudioType.Failed)
                 {
                     _player.Play(_oopsAudioPath);
                 }
