@@ -1,20 +1,34 @@
 using Atk.Cis.Service.Interfaces;
+using NetCoreAudio.Interfaces;
 
 namespace Atk.Cis.Worker;
 
 public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
+    private readonly IPlayer _player;
     private readonly IServiceScopeFactory _scopeFactory;
     private ICheckInDeskService? _desk;
     private readonly IConfiguration _config;
     private DateTimeOffset? _lastRunSessionCleanup;
+    private readonly string _checkedInAudioPath = "Assets/checked-in.wav";
+    private readonly string _checkedOutAudioPath = "Assets/checked-out.wav";
+    private readonly string _oopsAudioPath = "Assets/oops.wav";
+    private readonly bool _isAudioOn = false;
+    private readonly int _sessionCleanupIntervalMinutes = 480;
+    private readonly int _maxDurationMinutes = 480;
 
-    public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory, IConfiguration config)
+    public Worker(ILogger<Worker> logger, IServiceScopeFactory scopeFactory, IConfiguration config,
+            IPlayer player)
     {
         _logger = logger;
         _config = config;
         _scopeFactory = scopeFactory;
+        _player = player;
+
+        _isAudioOn = _config.GetValue<bool>("AudioOn");
+        _sessionCleanupIntervalMinutes = _config.GetValue<int>("SessionCleanup:WorkerIntervalMinutes");
+        _maxDurationMinutes = _config.GetValue<int>("SessionCleanup:MaxDurationMinutes");
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -23,14 +37,12 @@ public class Worker : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            var sessionCleanupIntervalMinutes = _config.GetValue<int>("SessionCleanup:WorkerIntervalMinutes");
-            if (_lastRunSessionCleanup == null || _lastRunSessionCleanup.Value.AddMinutes(sessionCleanupIntervalMinutes) < DateTimeOffset.Now)
+            if (_lastRunSessionCleanup == null || _lastRunSessionCleanup.Value.AddMinutes(_sessionCleanupIntervalMinutes) < DateTimeOffset.Now)
             {
                 _lastRunSessionCleanup = DateTimeOffset.Now;
-                var maxDurationMinutes = _config.GetValue<int>("SessionCleanup:MaxDurationMinutes");
                 using var scope = _scopeFactory.CreateScope();
                 _desk = scope.ServiceProvider.GetRequiredService<ICheckInDeskService>();
-                var result = await _desk.CleanupStaleSessions(TimeSpan.FromMinutes(maxDurationMinutes), stoppingToken);
+                var result = await _desk.CleanupStaleSessions(TimeSpan.FromMinutes(_maxDurationMinutes), stoppingToken);
                 _logger.LogInformation(result);
             }
 
@@ -38,7 +50,6 @@ public class Worker : BackgroundService
 
             if (string.IsNullOrEmpty(input))
                 continue;
-
 
             if (input.StartsWith(":"))
             {
@@ -48,15 +59,58 @@ public class Worker : BackgroundService
             {
                 using var scope = _scopeFactory.CreateScope();
                 _desk = scope.ServiceProvider.GetRequiredService<ICheckInDeskService>();
-                var result = await _desk.CheckIn(input, stoppingToken);
-                _logger.LogInformation(result);
+
+                try
+                {
+                    var isCheckedIn = _desk.IsCheckedIn(input, stoppingToken);
+                    var result = string.Empty;
+                    if (await isCheckedIn)
+                    {
+                        result = await _desk.CheckOut(input, stoppingToken);
+                        PlaySound(1);
+                    }
+                    else
+                    {
+                        result = await _desk.CheckIn(input, stoppingToken);
+                        PlaySound(2);
+                    }
+                    _logger.LogInformation(result);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    PlaySound(3);
+                }
             }
-
-
             await Task.Delay(500, stoppingToken);
         }
     }
 
+    private void PlaySound(int type)
+    {
+        try
+        {
+            if (_isAudioOn)
+            {
+                if (type == 1)
+                {
+                    _player.Play(_checkedOutAudioPath);
+                }
+                else if (type == 2)
+                {
+                    _player.Play(_checkedInAudioPath);
+                }
+                else if (type == 3)
+                {
+                    _player.Play(_oopsAudioPath);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message);
+        }
+    }
     private async void HandleCommand(string command, CancellationToken token)
     {
         switch (command)

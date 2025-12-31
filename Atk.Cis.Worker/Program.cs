@@ -1,6 +1,9 @@
 using Serilog;
 using Atk.Cis.Worker;
 using Atk.Cis.Service;
+using NetCoreAudio;
+using NetCoreAudio.Interfaces;
+
 
 var builder = Host.CreateApplicationBuilder(args);
 
@@ -21,6 +24,8 @@ builder.Logging.AddSerilog(dispose: true);
 builder.Services.AddHostedService<Worker>();
 
 builder.Services.AddCisServices(builder.Configuration);
+
+builder.Services.AddSingleton<IPlayer, Player>();
 
 var host = builder.Build();
 host.Run();

@@ -126,7 +126,18 @@ public class CheckInDeskService : ICheckInDeskService
             await _dbContext.SaveChangesAsync(cancellationToken);
             return $"Check-in complete for {user.FirstName} {user.LastName}.";
         }
-        return await CheckOut(code, cancellationToken);
+        return $"{user.FirstName} {user.LastName} already checked-in";
+    }
+
+    public async Task<bool> IsCheckedIn(string code, CancellationToken cancellationToken)
+    {
+        var errorMessage = "That barcode isn't valid";
+        if (string.IsNullOrEmpty(code)) throw new Exception(errorMessage);
+        var user = await _dbContext.Users
+            .SingleOrDefaultAsync(x => x.Code == code.ToLowerInvariant(), cancellationToken);
+        if (user == null) throw new Exception(errorMessage);
+        return await _dbContext.UserSessions
+            .AnyAsync(x => x.UserId == user.Id && x.ClosedAt == null, cancellationToken);
     }
 
     public async Task<string> CheckOut(string code, CancellationToken cancellationToken = default)
