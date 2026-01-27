@@ -1,3 +1,5 @@
+buymeacoffee.com/zakkoo
+
 # ATK Check-in System
 
 ATK CIS is a lightweight check-in system.
