@@ -172,4 +172,4 @@ dotnet publish Atk.Cis.Web/Atk.Cis.Web.csproj -c Release -o ./publish/web-linux 
 ```
 
 # I like tee as well ;)
-[buymeacoffee.com/zakkoo](buymeacoffee.com/zakkoo)
+[buymeacoffee.com/zakkoo](https://buymeacoffee.com/zakkoo)
