@@ -1,5 +1,3 @@
-buymeacoffee.com/zakkoo
-
 # ATK Check-in System
 
 ATK CIS is a lightweight check-in system.
@@ -172,3 +170,6 @@ Publish for Linux (arm64):
 dotnet publish Atk.Cis.Worker/Atk.Cis.Worker.csproj -c Release -o ./publish/worker-linux -r linux-arm64 --self-contained true
 dotnet publish Atk.Cis.Web/Atk.Cis.Web.csproj -c Release -o ./publish/web-linux -r linux-arm64 --self-contained true
 ```
+
+# I like tee as well ;)
+buymeacoffee.com/zakkoo
