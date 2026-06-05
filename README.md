@@ -5,6 +5,7 @@ ATK CIS is a lightweight check-in system.
 The web app supports sign-up, check-in, check-out, and more. You can also connect a barcode scanner and let the worker daemon handle scanning and check-in/check-out flows.
 
 - [Development](#development)
+  - [Run the apps](#run-the-apps)
   - [Model changes](#model-changes)
   - [Web asset changes](#web-asset-changes)
 - [Provisioning](#provisioning)
@@ -35,6 +36,24 @@ npm run build
 ```bash
 dotnet ef database update -p Atk.Cis.Service -s Atk.Cis.Worker
 ```
+
+### Run the apps
+
+Run the web app:
+
+```bash
+dotnet run --project Atk.Cis.Web
+```
+
+It serves at https://localhost:5006 and http://localhost:5005.
+
+Run the worker daemon (handles barcode scanning and check-in/check-out):
+
+```bash
+dotnet run --project Atk.Cis.Worker
+```
+
+The admin pages are protected by a password. The default is `atkadmin`, configured via the `Admin:Password` key in `Atk.Cis.Web/appsettings.json`. Change it before deploying.
 
 ### Model changes
 If a model change affects the database, add a migration:
